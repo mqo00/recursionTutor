@@ -1,10 +1,5 @@
 import("RT_types.nools");
 
-//Update 13:47 12/03/2021
-//  change type Cell's name to the format of "callStackCol.R0C0"
-//  update format of code in problem desciption
-//  modify rule lineToCol
-
 rule bootstrap {
 	when {
 		s: Boolean s === false from false;
@@ -24,7 +19,7 @@ rule bootstrap {
                 }
             } else {
                 for (let row = 0; row < bcLine + 1; row++) {
-                    // cellName e.g., callStackColRow0, baseCaseColRow2
+                    // cellName e.g., callStackCol.R0C0, baseCaseCol.R2C2
                     cellVal=null;
                     cellName = cols[col] + ".R" + row + "C0"; 
                     if (row == 0 && col == 1) { // first input val
@@ -42,9 +37,8 @@ rule bootstrap {
             }
             let visible = col < 2 ? true : false;
             assert(new Column(cellCol, cellNameList, visible));
-		    // console.log("bootstrap", cellCol, cellNameList);
         }
-        // TODO lineInput, inputArgs, returnVal not useful? 
+        // TODO lineInput, inputArgs, returnVal not useful?
         assert(new Problem(problemName, lineInput, inputArgs, returnVal, bcLine, false));
         assert(new TPA("probDscp", "UpdateTextArea", prompt1+"="+prompt2+"="+prompt3));
         assert(new TPA("probCode", "UpdateTextArea", code1+"=="+code2+"=="+code3+"/\/"+code4+"/\/"+code5));
@@ -55,11 +49,10 @@ rule bootstrap {
 	}
 }
 
-
-// subgoal          correct rules           switch rules        buggy rules
-// inputLineNum     enterLineNum            lineToCall      
-// inputCallStack   enterArgs; enterBC                          buggyBC
-// inputReturnVal   enterReturn             callToReturn        buggyReturn
+// subgoal              correct rules           switch/buggy rules
+// inputLineNum         enterLineNum            lineToCall      
+// inputCallStack       enterArgs; enterBC      buggyBC
+// inputReturnVal       enterReturn             buggyReturn
 
 // SRL reflection msg at BC step & return 1st step
 
@@ -69,12 +62,12 @@ rule bootstrap {
 // Then update the value at input box interface & WM
 rule enterLineNum {
     when {
-        p: Problem p.subGoal === "inputLineNum" {lineInput: lines};
+        p: Problem p.subGoal === "inputLineNum"; 
         c: Cell c.colName == "lineNumbers" && !c.value {name: sel};
     }
     then {
-        if (checkSAI({selection: sel, action: "UpdateTextField", input: lines[sel]})) {
-            modify(c, "value", lines[sel]);
+        if (checkSAI({selection: sel, action: "UpdateTextField", input: lineInput[sel]})) {
+            modify(c, "value", lineInput[sel]);
             halt();
         } else {
             backtrack();
@@ -90,46 +83,100 @@ rule enterLineNum {
 rule lineToCall {
     when {
         p: Problem p.subGoal === "inputLineNum";
-        not (
-        c: Cell c.colName == "lineNumbers" && !c.value {name: sel} 
-        );
+        not (c: Cell c.colName == "lineNumbers" && !c.value);
     }
     then {
-            assert(new Hint("subgoal changed"));
-            modify(p, "subGoal", "inputCallStack");
-            //halt();
-       
+        assert(new Hint("Good job! Start work on the call stack column now!"));
+        modify(p, "subGoal", "inputCallStack");
+        modify(p, "curStep", ["callStackCol", 0]);
     }
 }
 
-
 // enterArgs
 // If subGoal == "inputCallStack", row = curStep[1] <= bcLine
+//  And all cells at callStackCol w/ rowNum < row has value (inherently met)
 //  And student enter correct arg that match inputArgs[row] at callStackCol
 // Then update the value at table callStackCol & row, curStep row++
-
+rule enterArgs {
+    when {
+        p: Problem p.subGoal === "inputCallStack" && p.curStep[1] <= bcLine 
+            {curStep[1]: row}; // TODO: not sure if {curStep[1]: row} syntax is valid, 
+            // if not, {curStep: step} and replace row with step[1]
+        c: Cell c.colName == "callStackCol" && c.rowNum == row && !c.value 
+            {name: sel};
+    }
+    then {
+        if (checkSAI({selection: sel, action: "UpdateTextField", input: inputArgs[row]})) {
+            modify(c, "value", inputArgs[row]);
+            modify(p, "curStep", ["callStackCol", row+1]);
+            halt();
+        } else {
+            backtrack();
+        }
+    }
+}
 
 // enterBC
 // If subGoal == "inputCallStack", curStep[1] == bcLine
-//  And student enter "bc/BC" at bcLine & baseCaseCol 
+//  And all cells at callStackCol w/ rowNum <= bcLine has value (inherently met)
+//  And student enter "bc/BC" at bcLine & baseCaseCol
 // Then update the value at table baseCaseCol & bcLine to "BC"
 //  update subgoal to "inputReturnVal", curStep to ["returnValCol", bcLine]
+//  set returnValCol visible to true 
+rule enterBC {
+    when {
+        p: Problem p.subGoal === "inputCallStack" && p.curStep[1] == bcLine;
+        bc: Cell bc.colName == "baseCaseCol" && bc.rowNum == bcLine {name: sel};
+    }
+    then {
+        var ans = "BC"; // pass in comparator, or check StudentValues https://github.com/CMUCTAT/CTAT/wiki/JavaScript-Model-Tracer#evaluating-student-input
+        var SAI = {selection: sel, action: "UpdateTextField", input: ans};
+        if (checkSAI(SAI, function(s, t) {return s.selection == t.selection && s.input.toLowerCase() == ans;})) {
+            modify(bc, "value", ans);
 
+            assert(new Hint("Good job! Start work on the return value column now!"));
+            modify(p, "subGoal", "inputReturnVal");
+            modify(p, "curStep", ["returnValCol", bcLine]);
+            halt();
+        } else {
+            backtrack();
+        }
+    }
+}
 
 // enterReturn
 // If subGoal == "inputReturnVal", row = curStep[1] <= bcLine
 //  And student enter correct return that match returnVal[row] at returnValCol
 // Then update the value at table returnValCol & row, curStep row--
 //  And if row == 0, update done to true
-
-
-
+rule enterReturn {
+    when {
+        p: Problem p.subGoal === "inputReturnVal" && p.curStep[1] <= bcLine
+            {curStep[1]: row}; // TODO: not sure if syntax is valid, 
+            // if not, {curStep: step} and replace row with step[1]
+        c: Cell c.colName == "returnValCol" && c.rowNum == row && !c.value 
+            {name: sel};
+    }
+    then {
+        if (checkSAI({selection: sel, action: "UpdateTextField", input: returnVal[row]})) {
+            modify(c, "value", returnVal[row]);
+            modify(p, "curStep", ["returnValCol", row-1]);
+            if (row == 0) {
+                modify(p, "done", true);
+            }
+            halt();
+        } else {
+            backtrack();
+        }
+    }
+}
 
 // buggyBC scenarios
 // (1) callStackCol haven't reach bcLine, attempt to check baseCaseCol
 // (2) callStackCol go beyond bcLine, attempt to fill in more args
+//     TODO: currently #rows = len(inputArgs), need global var for table #row
 // (3) callStackCol at bcLine, check baseCaseCol at row != bcLine
-// 
+
 // If curStep[1] != bcLine
 
 // buggyReturn scenarios
