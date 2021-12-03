@@ -13,10 +13,9 @@ rule bootstrap {
             cellVal = null;
             cellCol = cols[col];
             if (col == 0) {
-                for (let row = 0; row < lineNumName.length; row++) {
-                    cellName = lineNumName[row];
-                    cellNameList.push(cellName);
-                    assert(new Cell(cellName, cellVal, -1, cellCol));
+                for (let lineName in lineInput) {
+                    cellNameList.push(lineName);
+                    assert(new Cell(lineName, cellVal, -1, cellCol));
                 }
             } else {
                 for (let row = 0; row < bcLine + 1; row++) {
@@ -28,7 +27,7 @@ rule bootstrap {
                     cellNameList.push(cellName);
                     assert(new Cell(cellName, cellVal, row, cellCol));
                     if (cellVal != null) {
-                        // [selection, action, input], sel = cellName or cell?
+                        // [selection, action, input], sel = cellName
                         assert(new TPA(cellName, "UpdateTextField", cellVal));
                     }
                 }
@@ -67,8 +66,8 @@ rule enterLineNum {
     when {
         p: Problem p.subGoal === "inputLineNum" 
             {lineInput: lines};
-        c: Cell c.colName == "lineNumbers" && !c.value
-         {name: sel};
+          c: Cell c.colName == "lineNumbers" && !c.value 
+          {name: sel};
     }
     then {
         if (checkSAI({selection: sel, action: "UpdateTextField", input: lines[sel]})) {
