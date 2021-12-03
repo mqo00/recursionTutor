@@ -10,11 +10,14 @@ global bcLine = 6;
 
 global prompt = "hellowolrd";
 
+global lineInput = {
+    "bcStart": 2,
+    "bcEnd": 5,
+    "rcStart": 6,
+    "rcEnd": 10};
 
 //"Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>recursiveCount(10100) = 2 <br>recursiveCount(23332) = 0 <br>Trace through this example: recursiveCount(1231231).";
 
-
-global lineNumInput = [2, 5, 6, 10];
 global code = "<br>1 def recursiveCount(n):<br>2    if n == 1:<br>3        return 1<br>4    elif n < 10:<br>5        return 0<br>6    else:<br>7        if n%10 == 1:<br>8            return 1 + recursiveCount(n // 10)<br>9        else:<br>10            return recursiveCount(n // 10)";
 
 

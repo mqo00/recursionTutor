@@ -2,25 +2,23 @@
 // Self-defined types
 //  Problem, Cell (interface element), Column
 
-// lineNumName: match cells with same name
-// initial curStep          subGoal
-//   ["", -1]               "inputLineNum"
-//   ["callStackCol", 0]    "inputCallStack"
-//   ["returnValCol", 0]    "inputReturnVal"
+// lineInput: dictionary to match cells with same name
+// initial curStep               subGoal
+//   ["", -1]                    "inputLineNum"
+//   ["callStackCol", 0]         "inputCallStack"
+//   ["returnValCol", bcLine]    "inputReturnVal"
 define Problem {
 	name: null,
-    lineNumName: null,
-    lineNumInput: null,
+    lineInput: null,
     inputArgs: null,
     returnVal: null,
     bcLine: null,
 	subGoal: null,
     curStep: [],
 	done: null,
-	constructor: function(n, lnN, lnI, iA, rV, bcL, d) {
+	constructor: function(n, lnI, iA, rV, bcL, d) {
 		this.name = n;
-        this.lineNumName = lnN;
-        this.lineNumInput = lnI;
+        this.lineInput = lnI;
         this.inputArgs = iA;
         this.returnVal = rV;
         this.bcLine = bcL;
