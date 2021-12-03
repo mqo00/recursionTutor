@@ -1,5 +1,10 @@
 import("RT_types.nools");
 
+//Update 13:47 12/03/2021
+//  change type Cell's name to the format of "callStackCol.R0C0"
+//  update format of code in problem desciption
+//  modify rule lineToCol
+
 rule bootstrap {
 	when {
 		s: Boolean s === false from false;
@@ -11,6 +16,7 @@ rule bootstrap {
             let cellNameList=[];
             cellVal = null;
             cellCol = cols[col];
+            
             if (col == 0) {
                 for (let lineName in lineInput) {
                     cellNameList.push(lineName);
@@ -19,16 +25,19 @@ rule bootstrap {
             } else {
                 for (let row = 0; row < bcLine + 1; row++) {
                     // cellName e.g., callStackColRow0, baseCaseColRow2
-                    cellName = cols[col] + "Row" + row; 
+                    cellVal=null;
+                    cellName = cols[col] + ".R" + row + "C0"; 
                     if (row == 0 && col == 1) { // first input val
                         cellVal = inputArgs[row];
                     }
+
                     cellNameList.push(cellName);
                     assert(new Cell(cellName, cellVal, row, cellCol));
                     if (cellVal != null) {
                         // [selection, action, input], sel = cellName
                         assert(new TPA(cellName, "UpdateTextField", cellVal));
                     }
+
                 }
             }
             let visible = col < 2 ? true : false;
@@ -37,8 +46,8 @@ rule bootstrap {
         }
         // TODO lineInput, inputArgs, returnVal not useful? 
         assert(new Problem(problemName, lineInput, inputArgs, returnVal, bcLine, false));
-        assert(new TPA("probDscp", "UpdateTextArea", prompt));
-        assert(new TPA("probCode", "UpdateTextArea", code));
+        assert(new TPA("probDscp", "UpdateTextArea", prompt1+"="+prompt2+"="+prompt3));
+        assert(new TPA("probCode", "UpdateTextArea", code1+"=="+code2+"=="+code3+"/\/"+code4+"/\/"+code5));
         assert(new TPA("step2Dscp", "UpdateTextArea", instruction[0]));
 
 		setProblemAttribute("use_backtracking", true);
@@ -81,17 +90,15 @@ rule enterLineNum {
 rule lineToCall {
     when {
         p: Problem p.subGoal === "inputLineNum";
-        col: Column {cellNames: }; // how to search all cells: c1, c2, c3, c4?
-        c: Cell c.colName == "lineNumbers" && !c.value {name: sel};
+        not (
+        c: Cell c.colName == "lineNumbers" && !c.value {name: sel} 
+        );
     }
     then {
-        if (checkSAI({selection: sel, action: "UpdateTextField", input: lines[sel]})) {
-            modify(c, "value", lines[sel]);
+            assert(new Hint("subgoal changed"));
             modify(p, "subGoal", "inputCallStack");
-            halt();
-        } else {
-            backtrack();
-        }
+            //halt();
+       
     }
 }
 
