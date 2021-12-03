@@ -5,7 +5,6 @@ rule bootstrap {
 		s: Boolean s === false from false;
 	}
 	then {
-        let lineNumName = ["bcStart", "bcEnd", "rcStart", "rcEnd"];
 		let cols = ["lineNumbers", "callStackCol", "baseCaseCol", "returnValCol"];
         var cellName, cellVal, cellCol; 
         for (let col = 0; col < cols.length; col++) {
@@ -34,9 +33,9 @@ rule bootstrap {
             }
             let visible = col < 2 ? true : false;
             assert(new Column(cellCol, cellNameList, visible));
-		    console.log("bootstrap", cellCol, cellNameList);
+		    // console.log("bootstrap", cellCol, cellNameList);
         }
-
+        // TODO lineInput, inputArgs, returnVal not useful? 
         assert(new Problem(problemName, lineInput, inputArgs, returnVal, bcLine, false));
         assert(new TPA("probDscp", "UpdateTextArea", prompt));
         assert(new TPA("probCode", "UpdateTextArea", code));
@@ -48,11 +47,10 @@ rule bootstrap {
 }
 
 
-
-// subgoal          correct production rules    buggy rules
-// inputLineNum     enterLineNum                
-// inputCallStack   enterArgs; enterBC          buggyBC
-// inputReturnVal   enterReturn                 buggyReturn
+// subgoal          correct rules           switch rules        buggy rules
+// inputLineNum     enterLineNum            lineToCall      
+// inputCallStack   enterArgs; enterBC                          buggyBC
+// inputReturnVal   enterReturn             callToReturn        buggyReturn
 
 // SRL reflection msg at BC step & return 1st step
 
@@ -60,25 +58,43 @@ rule bootstrap {
 // If subGoal == "inputLineNum", there're >=1 out of 4 linNumInput box empty
 //  And student enter correct lineNum for an empty input box
 // Then update the value at input box interface & WM
-//  And if no empty box, update subgoal to "inputCallStack"
-//      init curStep to be ["callStackCol", 0]
 rule enterLineNum {
     when {
-        p: Problem p.subGoal === "inputLineNum" 
-            {lineInput: lines};
-          c: Cell c.colName == "lineNumbers" && !c.value 
-          {name: sel};
+        p: Problem p.subGoal === "inputLineNum" {lineInput: lines};
+        c: Cell c.colName == "lineNumbers" && !c.value {name: sel};
     }
     then {
         if (checkSAI({selection: sel, action: "UpdateTextField", input: lines[sel]})) {
             modify(c, "value", lines[sel]);
-            // if modify(p, "subGoal", "inputCallStack");
             halt();
         } else {
             backtrack();
         }
     }
 }
+
+// lineToCall
+// If subGoal == "inputLineNum"
+//  And lineNumbers Column has no cell with empty value
+// Then update subgoal to "inputCallStack"
+//  init curStep to be ["callStackCol", 0]
+rule lineToCall {
+    when {
+        p: Problem p.subGoal === "inputLineNum";
+        col: Column {cellNames: }; // how to search all cells: c1, c2, c3, c4?
+        c: Cell c.colName == "lineNumbers" && !c.value {name: sel};
+    }
+    then {
+        if (checkSAI({selection: sel, action: "UpdateTextField", input: lines[sel]})) {
+            modify(c, "value", lines[sel]);
+            modify(p, "subGoal", "inputCallStack");
+            halt();
+        } else {
+            backtrack();
+        }
+    }
+}
+
 
 // enterArgs
 // If subGoal == "inputCallStack", row = curStep[1] <= bcLine
