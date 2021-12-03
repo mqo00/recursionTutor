@@ -1,0 +1,150 @@
+import("RT_types.nools");
+
+//Update 13:47 12/03/2021
+//  change type Cell's name to the format of "callStackCol.R0C0"
+//  update format of code in problem desciption
+//  modify rule lineToCol
+
+rule bootstrap {
+	when {
+		s: Boolean s === false from false;
+	}
+	then {
+		let cols = ["lineNumbers", "callStackCol", "baseCaseCol", "returnValCol"];
+        var cellName, cellVal, cellCol; 
+        for (let col = 0; col < cols.length; col++) {
+            let cellNameList=[];
+            cellVal = null;
+            cellCol = cols[col];
+            
+            if (col == 0) {
+                for (let lineName in lineInput) {
+                    cellNameList.push(lineName);
+                    assert(new Cell(lineName, cellVal, -1, cellCol));
+                }
+            } else {
+                for (let row = 0; row < bcLine + 1; row++) {
+                    // cellName e.g., callStackColRow0, baseCaseColRow2
+                    cellVal=null;
+                    cellName = cols[col] + ".R" + row + "C0"; 
+                    if (row == 0 && col == 1) { // first input val
+                        cellVal = inputArgs[row];
+                    }
+
+                    cellNameList.push(cellName);
+                    assert(new Cell(cellName, cellVal, row, cellCol));
+                    if (cellVal != null) {
+                        // [selection, action, input], sel = cellName
+                        assert(new TPA(cellName, "UpdateTextField", cellVal));
+                    }
+
+                }
+            }
+            let visible = col < 2 ? true : false;
+            assert(new Column(cellCol, cellNameList, visible));
+		    // console.log("bootstrap", cellCol, cellNameList);
+        }
+        // TODO lineInput, inputArgs, returnVal not useful? 
+        assert(new Problem(problemName, lineInput, inputArgs, returnVal, bcLine, false));
+        assert(new TPA("probDscp", "UpdateTextArea", prompt1+"="+prompt2+"="+prompt3));
+        assert(new TPA("probCode", "UpdateTextArea", code1+"=="+code2+"=="+code3+"/\/"+code4+"/\/"+code5));
+        assert(new TPA("step2Dscp", "UpdateTextArea", instruction[0]));
+
+		setProblemAttribute("use_backtracking", true);
+		halt();
+	}
+}
+
+
+// subgoal          correct rules           switch rules        buggy rules
+// inputLineNum     enterLineNum            lineToCall      
+// inputCallStack   enterArgs; enterBC                          buggyBC
+// inputReturnVal   enterReturn             callToReturn        buggyReturn
+
+// SRL reflection msg at BC step & return 1st step
+
+// enterLineNum
+// If subGoal == "inputLineNum", there're >=1 out of 4 linNumInput box empty
+//  And student enter correct lineNum for an empty input box
+// Then update the value at input box interface & WM
+rule enterLineNum {
+    when {
+        p: Problem p.subGoal === "inputLineNum" {lineInput: lines};
+        c: Cell c.colName == "lineNumbers" && !c.value {name: sel};
+    }
+    then {
+        if (checkSAI({selection: sel, action: "UpdateTextField", input: lines[sel]})) {
+            modify(c, "value", lines[sel]);
+            halt();
+        } else {
+            backtrack();
+        }
+    }
+}
+
+// lineToCall
+// If subGoal == "inputLineNum"
+//  And lineNumbers Column has no cell with empty value
+// Then update subgoal to "inputCallStack"
+//  init curStep to be ["callStackCol", 0]
+rule lineToCall {
+    when {
+        p: Problem p.subGoal === "inputLineNum";
+        not (
+        c: Cell c.colName == "lineNumbers" && !c.value {name: sel} 
+        );
+    }
+    then {
+            assert(new Hint("subgoal changed"));
+            modify(p, "subGoal", "inputCallStack");
+            //halt();
+       
+    }
+}
+
+
+// enterArgs
+// If subGoal == "inputCallStack", row = curStep[1] <= bcLine
+//  And student enter correct arg that match inputArgs[row] at callStackCol
+// Then update the value at table callStackCol & row, curStep row++
+
+
+// enterBC
+// If subGoal == "inputCallStack", curStep[1] == bcLine
+//  And student enter "bc/BC" at bcLine & baseCaseCol 
+// Then update the value at table baseCaseCol & bcLine to "BC"
+//  update subgoal to "inputReturnVal", curStep to ["returnValCol", bcLine]
+
+
+// enterReturn
+// If subGoal == "inputReturnVal", row = curStep[1] <= bcLine
+//  And student enter correct return that match returnVal[row] at returnValCol
+// Then update the value at table returnValCol & row, curStep row--
+//  And if row == 0, update done to true
+
+
+
+
+// buggyBC scenarios
+// (1) callStackCol haven't reach bcLine, attempt to check baseCaseCol
+// (2) callStackCol go beyond bcLine, attempt to fill in more args
+// (3) callStackCol at bcLine, check baseCaseCol at row != bcLine
+// 
+// If curStep[1] != bcLine
+
+// buggyReturn scenarios
+// (1) start from row 0 of returnValCol instead of row bcLine
+// (2) start from row bcLine but wrong base case return value 
+// (3) wrong value at curStep row -> off by 1 hard to detect...
+
+
+rule Done {
+	when {
+		prob : Problem prob.done === true;
+	}
+	then {
+		if (checkSAI({selection: "done", action: "ButtonPressed", input: "don't_care"})) {
+			halt();
+		}
+	}
+}
