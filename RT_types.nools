@@ -3,10 +3,10 @@
 //  Problem, Cell (interface element), Column
 
 // lineNumName: match cells with same name
-// initial curStep              subGoal
-//   ["", -1]                   "inputLineNum"
-//   ["callStackCol", 0]        "inputCallStack"
-//   ["returnValCol", bcLine]   "inputReturnVal"
+// initial curStep          subGoal
+//   ["", -1]               "inputLineNum"
+//   ["callStackCol", 0]    "inputCallStack"
+//   ["returnValCol", 0]    "inputReturnVal"
 define Problem {
 	name: null,
     lineNumName: null,
@@ -15,12 +15,12 @@ define Problem {
     returnVal: null,
     bcLine: null,
 	subGoal: null,
-    curStep: null,
+    curStep: [],
 	done: null,
 	constructor: function(n, lnN, lnI, iA, rV, bcL, d) {
 		this.name = n;
         this.lineNumName = lnN;
-        this.lineNumInput = lnI
+        this.lineNumInput = lnI;
         this.inputArgs = iA;
         this.returnVal = rV;
         this.bcLine = bcL;
@@ -32,11 +32,11 @@ define Problem {
 
 define Column {
 	name: null,
-	cellName: [],
+	cellNames: [],
     visible: null,
 	constructor: function(n, cn, v) {
 		this.name = n;
-		this.cellName = cn;
+		this.cellNames = cn;
 		this.visible = v;
 	}
 }

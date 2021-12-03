@@ -1,4 +1,3 @@
-
 import("RT_types.nools");
 
 rule bootstrap {
@@ -23,7 +22,7 @@ rule bootstrap {
                 for (let row = 0; row < bcLine + 1; row++) {
                     // cellName e.g., callStackColRow0, baseCaseColRow2
                     cellName = cols[col] + "Row" + row; 
-                    if (row == 0 && col == 1) { // first input val, extra scaffold
+                    if (row == 0 && col == 1) { // first input val
                         cellVal = inputArgs[row];
                     }
                     cellNameList.push(cellName);
@@ -39,62 +38,19 @@ rule bootstrap {
 		    console.log("bootstrap", cellCol, cellNameList);
         }
 
-        assert(new Problem(problemName, lineNumName, lineNumInput, 
-                           inputArgs, returnVal, bcLine, false));
+        assert(new Problem(problemName, lineNumName, lineNumInput, inputArgs, returnVal, bcLine, false));
+        assert(new TPA("probDscp", "UpdateTextArea", prompt));
+        assert(new TPA("probCode", "UpdateTextArea", code));
+        assert(new TPA("step2Dscp", "UpdateTextArea", instruction[0]));
+
+
+
 
 		setProblemAttribute("use_backtracking", true);
 		halt();
 	}
 }
 
-// subgoal          correct production rules    buggy rules
-// inputLineNum     enterLineNum                
-// inputCallStack   enterArgs; enterBC          buggyBC
-// inputReturnVal   enterReturn                 buggyReturn
-
-// SRL reflection msg at BC step & return 1st step
-
-// enterLineNum
-// If subGoal == "inputLineNum", there're >=1 out of 4 linNumInput box empty
-//  And student enter correct lineNum for an empty input box
-// Then update the value at input box interface & WM
-//  And if no empty box, update subgoal to "inputCallStack"
-//      init curStep to be ["callStackCol", 0]
-
-
-// enterArgs
-// If subGoal == "inputCallStack", row = curStep[1] <= bcLine
-//  And student enter correct arg that match inputArgs[row] at callStackCol
-// Then update the value at table callStackCol & row, curStep row++
-
-
-// enterBC
-// If subGoal == "inputCallStack", curStep[1] == bcLine
-//  And student enter "bc/BC" at bcLine & baseCaseCol 
-// Then update the value at table baseCaseCol & bcLine to "BC"
-//  update subgoal to "inputReturnVal", curStep to ["returnValCol", bcLine]
-
-
-// enterReturn
-// If subGoal == "inputReturnVal", row = curStep[1] <= bcLine
-//  And student enter correct return that match returnVal[row] at returnValCol
-// Then update the value at table returnValCol & row, curStep row--
-//  And if row == 0, update done to true
-
-
-
-
-// buggyBC scenarios
-// (1) callStackCol haven't reach bcLine, attempt to check baseCaseCol
-// (2) callStackCol go beyond bcLine, attempt to fill in more args
-// (3) callStackCol at bcLine, check baseCaseCol at row != bcLine
-// 
-// If curStep[1] != bcLine
-
-// buggyReturn scenarios
-// (1) start from row 0 of returnValCol instead of row bcLine
-// (2) start from row bcLine but wrong base case return value 
-// (3) wrong value at curStep row -> off by 1 hard to detect...
 
 rule Done {
 	when {
