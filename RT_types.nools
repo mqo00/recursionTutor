@@ -1,0 +1,95 @@
+
+// Self-defined types
+//  Problem, Cell (interface element), Column
+
+// lineNumName: match cells with same name
+// initial curStep              subGoal
+//   ["", -1]                   "inputLineNum"
+//   ["callStackCol", 0]        "inputCallStack"
+//   ["returnValCol", bcLine]   "inputReturnVal"
+define Problem {
+	name: null,
+    lineNumName: null,
+    lineNumInput: null,
+    inputArgs: null,
+    returnVal: null,
+    bcLine: null,
+	subGoal: null,
+    curStep: null,
+	done: null,
+	constructor: function(n, lnN, lnI, iA, rV, bcL, d) {
+		this.name = n;
+        this.lineNumName = lnN;
+        this.lineNumInput = lnI
+        this.inputArgs = iA;
+        this.returnVal = rV;
+        this.bcLine = bcL;
+	    this.subGoal = "inputLineNum";
+        this.curStep = ["", -1];
+		this.done = d;
+	}
+}
+
+define Column {
+	name: null,
+	cellName: [],
+    visible: null,
+	constructor: function(n, cn, v) {
+		this.name = n;
+		this.cellName = cn;
+		this.visible = v;
+	}
+}
+
+define Cell {
+	name: null,
+	value: null,
+	rowNum: null,
+	colName: null,
+	constructor: function(n, v, r, c) {
+		this.name = n;
+		this.value = v;
+		this.rowNum = r;
+		this.colName = c;
+	}
+}
+
+// Other useful types
+//  StudentValues, TPA, Hint
+
+define StudentValues {
+	selection: null,
+	action: null,
+	input: null,
+	constructor: function(s,a,i) {
+		this.selection = s;
+		this.action = a;
+		this.input = i;
+	}
+}
+
+define TPA {
+	selection: null,
+	action: null,
+	input: null,
+	constructor: function(s, a, i) {
+		if(Array.isArray(s)) {
+			this.selection = s[0];
+			this.action = s[1];
+			this.input = s[2];
+		} else {
+			this.selection = s;
+			this.action = a;
+			this.input = i;
+		}
+	}
+}
+
+define Hint {
+	precedence: 0,
+	msg: "",
+	constructor: function(m, optPrecedence) {
+		this.msg = m;
+		this.precedence = optPrecedence || 0;
+	}
+}

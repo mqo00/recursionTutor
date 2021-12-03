@@ -1,0 +1,40 @@
+
+
+problemName = "recursiveCount_1231231"
+// index = row of column lines, start from 0
+inputArgs = [1231231, 123123, 12312, 1231, 123, 12, 1]
+returnVal = [3, 2, 2, 2, 1, 1, 1]
+// input end & return start at bcLine, nRows = bcLine + 1
+bcLine = 6
+
+prompt = 
+"
+Recursive Code Tracing of recursiveCount
+Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, 
+recursiveCount(10100) = 2
+recursiveCount(23332) = 0
+Trace through this example: recursiveCount(1231231).
+"
+
+lineNumInput = [2, 5, 6, 10]
+code = 
+"
+1 def recursiveCount(n):
+2    if n == 1:
+3        return 1
+4    elif n < 10:
+5        return 0
+6    else:
+7        if n%10 == 1:
+8            return 1 + recursiveCount(n // 10)
+9        else:
+10            return recursiveCount(n // 10)
+"
+
+instruction = 
+"
+Step 1: identify the base case and recursive case in the code.
+Step 2: fill in the table
+Fill out the Call Stack column with the input at each recursive call. Put a checkmark in the BC? column at the row of the base case function call.
+Fill out the Return Value column with the returned value of the corresponding function calls on the same row in the order they returned.
+"
