@@ -2,11 +2,11 @@
 // Self-defined types
 //  Problem, Cell (interface element), Column
 
-// lineInput: dictionary to match cells with same name
-// initial curStep               subGoal
-//   ["", -1]                    "inputLineNum"
-//   ["callStackCol", 0]         "inputCallStack"
-//   ["returnValCol", bcLine]    "inputReturnVal"
+// lineNumName: match cells with same name
+// initial curStep          subGoal
+//   ["", -1]               "inputLineNum"
+//   ["callStackCol", 0]    "inputCallStack"
+//   ["returnValCol", 0]    "inputReturnVal"
 define Problem {
 	name: null,
     lineInput: null,

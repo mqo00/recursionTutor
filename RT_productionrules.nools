@@ -5,6 +5,7 @@ rule bootstrap {
 		s: Boolean s === false from false;
 	}
 	then {
+        let lineNumName = ["bcStart", "bcEnd", "rcStart", "rcEnd"];
 		let cols = ["lineNumbers", "callStackCol", "baseCaseCol", "returnValCol"];
         var cellName, cellVal, cellCol; 
         for (let col = 0; col < cols.length; col++) {
@@ -12,9 +13,10 @@ rule bootstrap {
             cellVal = null;
             cellCol = cols[col];
             if (col == 0) {
-                for (let lineName in lineInput) {
-                    cellNameList.push(lineName);
-                    assert(new Cell(lineName, cellVal, -1, cellCol));
+                for (let row = 0; row < lineNumName.length; row++) {
+                    cellName = lineNumName[row];
+                    cellNameList.push(cellName);
+                    assert(new Cell(cellName, cellVal, -1, cellCol));
                 }
             } else {
                 for (let row = 0; row < bcLine + 1; row++) {
@@ -26,7 +28,7 @@ rule bootstrap {
                     cellNameList.push(cellName);
                     assert(new Cell(cellName, cellVal, row, cellCol));
                     if (cellVal != null) {
-                        // [selection, action, input], sel = cellName
+                        // [selection, action, input], sel = cellName or cell?
                         assert(new TPA(cellName, "UpdateTextField", cellVal));
                     }
                 }
@@ -36,7 +38,7 @@ rule bootstrap {
 		    console.log("bootstrap", cellCol, cellNameList);
         }
 
-        assert(new Problem(problemName, lineNumName, lineNumInput, inputArgs, returnVal, bcLine, false));
+        assert(new Problem(problemName, lineInput, inputArgs, returnVal, bcLine, false));
         assert(new TPA("probDscp", "UpdateTextArea", prompt));
         assert(new TPA("probCode", "UpdateTextArea", code));
         assert(new TPA("step2Dscp", "UpdateTextArea", instruction[0]));
@@ -45,6 +47,7 @@ rule bootstrap {
 		halt();
 	}
 }
+
 
 
 // subgoal          correct production rules    buggy rules
@@ -61,20 +64,21 @@ rule bootstrap {
 //  And if no empty box, update subgoal to "inputCallStack"
 //      init curStep to be ["callStackCol", 0]
 rule enterLineNum {
-	when {
-		p: Problem p.subGoal === "inputLineNum" && 
+    when {
+        p: Problem p.subGoal === "inputLineNum" 
             {lineInput: lines};
-        c: Cell c.colName == "lineNumbers" && !c.value && {name: sel};
-	}
-	then {
-		if (checkSAI({selection: sel, action: "UpdateTextField", input: lines[sel]})) {
-			modify(c, "value", lines[sel]);
+        c: Cell c.colName == "lineNumbers" && !c.value
+         {name: sel};
+    }
+    then {
+        if (checkSAI({selection: sel, action: "UpdateTextField", input: lines[sel]})) {
+            modify(c, "value", lines[sel]);
             // if modify(p, "subGoal", "inputCallStack");
-			halt();
-		} else {
-			backtrack();
-		}
-	}
+            halt();
+        } else {
+            backtrack();
+        }
+    }
 }
 
 // enterArgs
