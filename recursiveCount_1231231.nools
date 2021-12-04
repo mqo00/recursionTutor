@@ -8,8 +8,8 @@ global returnVal = [3, 2, 2, 2, 1, 1, 1];
 // input end & return start at bcLine, nRows = bcLine + 1
 global bcLine = 6;
 
-global prompt1 = "Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>recursiveCount(10100) ";
-global prompt2 = " 2 <br>recursiveCount(23332) ";
+global prompt1 = "Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>&nbsp&nbsp &nbsp&nbsp recursiveCount(10100) ";
+global prompt2 = " 2 <br>&nbsp&nbsp &nbsp&nbsp recursiveCount(23332) ";
 global prompt3 = " 0 <br>Trace through this example: recursiveCount(1231231).";
 
 
@@ -55,6 +55,6 @@ global code5=`10)`;
 
 
 global instruction = [
-"Fill out the Call Stack column with the input at each recursive call. Put a checkmark in the BC? column at the row of the base case function call.",
+"Fill out the Call Stack column with the input at each recursive call. Fill 'bc' in the BC? column at the row of the base case function call.",
 "Fill out the Return Value column with the returned value of the corresponding function calls on the same row in the order they returned."
 ];

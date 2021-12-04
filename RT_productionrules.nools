@@ -1,3 +1,5 @@
+
+
 import("RT_types.nools");
 
 rule bootstrap {
@@ -12,6 +14,9 @@ rule bootstrap {
             cellVal = null;
             cellCol = cols[col];
             
+
+
+
             if (col == 0) {
                 for (let lineName in lineInput) {
                     cellNameList.push(lineName);
@@ -35,14 +40,19 @@ rule bootstrap {
 
                 }
             }
-            let visible = col < 2 ? true : false;
+            let visible = col < 3 ? true : false;
             assert(new Column(cellCol, cellNameList, visible));
+            assert(new TPA(cellCol, "setVisible", visible));
         }
         // TODO lineInput, inputArgs, returnVal not useful?
         assert(new Problem(problemName, lineInput, inputArgs, returnVal, bcLine, false));
         assert(new TPA("probDscp", "UpdateTextArea", prompt1+"="+prompt2+"="+prompt3));
         assert(new TPA("probCode", "UpdateTextArea", code1+"=="+code2+"=="+code3+"/\/"+code4+"/\/"+code5));
-        assert(new TPA("step2Dscp", "UpdateTextArea", instruction[0]));
+        assert(new TPA("step2Tag", "setVisible", false));
+        assert(new TPA("returnValColTag", "setVisible", false));
+        assert(new TPA("funcNameCol.R0C0", "UpdateTextArea", "recursiveCount(                     )")); // show function name, can be replaced with a global variable
+        assert(new TPA("funcNameCol.R1C0", "UpdateTextArea", "recursiveCount(                     )")); // show function name, can be replaced with a global variable
+
 
 		setProblemAttribute("use_backtracking", true);
 		halt();
@@ -62,7 +72,7 @@ rule bootstrap {
 // Then update the value at input box interface & WM
 rule enterLineNum {
     when {
-        p: Problem p.subGoal === "inputLineNum"; 
+        p: Problem p.subGoal === "inputLineNum";
         c: Cell c.colName == "lineNumbers" && !c.value {name: sel};
     }
     then {
@@ -81,15 +91,44 @@ rule enterLineNum {
 // Then update subgoal to "inputCallStack"
 //  init curStep to be ["callStackCol", 0]
 rule lineToCall {
-    when {
+    when {        
         p: Problem p.subGoal === "inputLineNum";
         not (c: Cell c.colName == "lineNumbers" && !c.value);
     }
     then {
+        //assert(new TPA("step2Tag", "setVisible", true)); //show step 2 title
+        //assert(new TPA("step2Dscp", "UpdateTextArea", instruction[0])); //show instruction for step2
+        // ?? appear after fill in a callstack row
         assert(new Hint("Good job! Start work on the call stack column now!"));
         modify(p, "subGoal", "inputCallStack");
-        modify(p, "curStep", ["callStackCol", 0]);
+        modify(p, "curStep", ["callStackCol", 1]); //row should start from 1, not 0 (first arg filled by tutor)
+        //assert(new TPA("funcNameCol.R1C0", "UpdateTextArea", "recursiveCount(                     )")); // show function name, can be replaced with a global variable
+
+        //halt();
     }
+}
+
+
+// shouStep2
+// If subGoal == "inputCallStack"
+//  And the student has not began step 2
+// Then show step label, instruction
+rule showStep2 {
+    when {        
+        p: Problem p.subGoal === "inputCallStack";
+        c: Cell c.colName == "callStackCol" && c.rowNum == 1 && !c.value ; //when the second row is not filled in
+    }
+    then {
+        assert(new TPA("step2Tag", "setVisible", true)); //show step 2 title
+        assert(new TPA("step2Dscp", "UpdateTextArea", instruction[0])); //show instruction for step2
+        // ?? appear after fill in a callstack row
+        
+
+        //halt();
+    }
+
+
+
 }
 
 // enterArgs
@@ -100,15 +139,19 @@ rule lineToCall {
 rule enterArgs {
     when {
         p: Problem p.subGoal === "inputCallStack" && p.curStep[1] <= bcLine 
-            {curStep[1]: row}; // TODO: not sure if {curStep[1]: row} syntax is valid, 
-            // if not, {curStep: step} and replace row with step[1]
-        c: Cell c.colName == "callStackCol" && c.rowNum == row && !c.value 
+            {curStep: step};
+        c: Cell c.colName == "callStackCol" && c.rowNum == step[1] && !c.value 
             {name: sel};
     }
     then {
-        if (checkSAI({selection: sel, action: "UpdateTextField", input: inputArgs[row]})) {
+        let row = step[1];
+        let nrow = row+1;
+        console.log("current row: "+row);
+        if (checkSAI({selection: sel, action: "UpdateTextArea", input: inputArgs[row] })) { //inputArgs[row] should be UpdateTextArea (not TextField)
             modify(c, "value", inputArgs[row]);
-            modify(p, "curStep", ["callStackCol", row+1]);
+            modify(p, "curStep", ["callStackCol", nrow]);
+            assert(new TPA("funcNameCol.R"+nrow+"C0", "UpdateTextArea", "recursiveCount(                     )")); // show function name, can be replaced with a global variable
+
             halt();
         } else {
             backtrack();
@@ -125,18 +168,25 @@ rule enterArgs {
 //  set returnValCol visible to true 
 rule enterBC {
     when {
-        p: Problem p.subGoal === "inputCallStack" && p.curStep[1] == bcLine;
+        p: Problem p.subGoal === "inputCallStack" && p.curStep[1] == bcLine+1 ; //curStep is actually the next row of bcLine
         bc: Cell bc.colName == "baseCaseCol" && bc.rowNum == bcLine {name: sel};
+        col: Column col.name == "returnValCol";
     }
     then {
-        var ans = "BC"; // pass in comparator, or check StudentValues https://github.com/CMUCTAT/CTAT/wiki/JavaScript-Model-Tracer#evaluating-student-input
-        var SAI = {selection: sel, action: "UpdateTextField", input: ans};
+        var ans = "bc"; // pass in comparator, or check StudentValues https://github.com/CMUCTAT/CTAT/wiki/JavaScript-Model-Tracer#evaluating-student-input
+        var SAI = {selection: sel, action: "UpdateTextArea", input: ans};
         if (checkSAI(SAI, function(s, t) {return s.selection == t.selection && s.input.toLowerCase() == ans;})) {
             modify(bc, "value", ans);
 
             assert(new Hint("Good job! Start work on the return value column now!"));
             modify(p, "subGoal", "inputReturnVal");
             modify(p, "curStep", ["returnValCol", bcLine]);
+            assert(new TPA("step2Dscp", "UpdateTextArea", instruction[1]));
+
+            modify(col, "visible", true);
+            assert(new TPA("returnValCol", "setVisible", col.visible)); //set retrunValCol to visible
+            assert(new TPA("returnValColTag", "setVisible", true));
+
             halt();
         } else {
             backtrack();
@@ -152,13 +202,14 @@ rule enterBC {
 rule enterReturn {
     when {
         p: Problem p.subGoal === "inputReturnVal" && p.curStep[1] <= bcLine
-            {curStep[1]: row}; // TODO: not sure if syntax is valid, 
-            // if not, {curStep: step} and replace row with step[1]
-        c: Cell c.colName == "returnValCol" && c.rowNum == row && !c.value 
+            {curStep: step}; 
+        c: Cell c.colName == "returnValCol" && c.rowNum == step[1] && !c.value 
             {name: sel};
     }
     then {
-        if (checkSAI({selection: sel, action: "UpdateTextField", input: returnVal[row]})) {
+        let row = step[1];
+        console.log(row);
+        if (checkSAI({selection: sel, action: "UpdateTextArea", input: returnVal[row]})) {
             modify(c, "value", returnVal[row]);
             modify(p, "curStep", ["returnValCol", row-1]);
             if (row == 0) {
