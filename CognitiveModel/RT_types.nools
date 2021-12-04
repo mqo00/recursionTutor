@@ -5,23 +5,25 @@
 // lineNumName: match cells with same name
 // initial curStep          subGoal
 //   ["", -1]               "inputLineNum"
-//   ["callStackCol", 0]    "inputCallStack"
+//   ["callStackCol", 1]    "inputCallStack" (row = 1 not 0 with scaffolding)
 //   ["returnValCol", 0]    "inputReturnVal"
+
+// TODO: delete lineInput, inputArgs, returnVal, bcLine not useful
 define Problem {
 	name: null,
-    lineInput: null,
-    inputArgs: null,
-    returnVal: null,
-    bcLine: null,
+    // lineInput: null,
+    // inputArgs: null,
+    // returnVal: null,
+    // bcLine: null,
 	subGoal: null,
     curStep: [],
 	done: null,
-	constructor: function(n, lnI, iA, rV, bcL, d) {
+	constructor: function(n, d) {
 		this.name = n;
-        this.lineInput = lnI;
-        this.inputArgs = iA;
-        this.returnVal = rV;
-        this.bcLine = bcL;
+        // this.lineInput = lnI;
+        // this.inputArgs = iA;
+        // this.returnVal = rV;
+        // this.bcLine = bcL;
 	    this.subGoal = "inputLineNum";
         this.curStep = ["", -1];
 		this.done = d;
