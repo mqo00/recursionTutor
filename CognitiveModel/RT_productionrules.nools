@@ -1,14 +1,27 @@
 // productionrules for recursionTutor
 
-// subgoal              correct rules           hint/buggy rules
-// inputLineNum         enterLineNum            buggyLineNum, lineToCallHint 
-// inputCallStack       enterArgs; enterBC      buggyBC
-// inputReturnVal       enterReturn             buggyReturn
-
-// TODO: SRL reflection hint msg at BC step & return 1st step?
-// TODO: fix bug message at BC step
-
 import("RT_types.nools");
+
+// Helper functions
+
+// comparator for input string BC or bc
+function cmpLowerBC(s, t) {
+    return s.selection == t.selection && s.input.toLowerCase() == "bc";
+}
+
+// when student's current row in the bcCol hasn't reached bc row
+function notReachBC(s, t) {
+    var ss = s.selection;
+    // console.log(parseInt(ss.substr(ss.length-3,1)));
+    return parseInt(ss.substr(ss.length-3,1)) < bcLine;
+}
+
+// when student's current row in the bcCol has gone beyond bc row
+function beyondBC(s, t) {
+    var ss = s.selection;
+    // console.log(parseInt(ss.substr(ss.length-3,1)));
+    return parseInt(ss.substr(ss.length-3,1)) > bcLine;
+}
 
 rule bootstrap {
 	when {
@@ -62,6 +75,16 @@ rule bootstrap {
 	}
 }
 
+// Production rules
+// subgoal              correct rules           hint/buggy rules
+// inputLineNum         enterLineNum            buggyLineNum, lineToCallHint 
+// inputCallStack       enterArgs; enterBC      buggyBC
+// inputReturnVal       enterReturn             buggyReturn
+
+// TODO: SRL reflection hint msg at BC step & return 1st step?
+// TODO: fix bug message at BC step
+
+
 // enterLineNum
 // If subGoal == "inputLineNum", there're >=1 out of 4 linNumInput box empty
 //  And student enter correct lineNum for an empty input box
@@ -87,14 +110,12 @@ rule enterLineNum {
                 modify(p, "subGoal", "inputCallStack");
                 modify(p, "curStep", ["callStackCol", 1]);
                 // show step 2 title & instruction
-
                 assert(new TPA("step2Tag", "setVisible", true));
                 assert(new TPA("step2Dscp", "UpdateTextArea", instruction[0]));
 
                 assert(new TPA("funcNameCol", "setVisible", true));
                 assert(new TPA("funcNameCol.R0C0", "UpdateTextArea", funcName+"(                     )")); 
                 assert(new TPA("funcNameCol.R1C0", "UpdateTextArea", funcName+"(                     )"));
-
 
                 assert(new TPA("callStackTag", "setVisible", true));
                 assert(new TPA("callStackCol", "setVisible", true));
@@ -156,10 +177,6 @@ rule enterArgs {
     }
 }
 
-function cmpLowerBC(s, t) {
-    return s.selection == t.selection && s.input.toLowerCase() == "bc";
-}
-
 // enterBC
 // If subGoal == "inputCallStack", curStep[1] == bcLine+1
 //  And all cells at callStackCol w/ rowNum <= bcLine has value (inherently met)
@@ -180,12 +197,9 @@ rule enterBC {
 
         var ans = "bc"; // pass in comparator, or check StudentValues
         var SAI = {selection: sel, action: "UpdateTextArea", input: ans};
-        
 
         if (checkSAI(SAI,  cmpLowerBC)) {
             modify(bc, "value", ans);
-
-            
             modify(p, "subGoal", "inputReturnVal");
             modify(p, "curStep", ["returnValCol", bcLine]);
 
@@ -215,9 +229,8 @@ rule enterReturn {
             {name: sel};
     }
     then {
-
         let row = step[1];
-        console.log(row);
+        // console.log(row);
         if (checkSAI({selection: sel, action: "UpdateTextArea", input: returnVal[row]})) {
             modify(c, "value", returnVal[row]);
             modify(p, "curStep", ["returnValCol", row-1]);
@@ -236,7 +249,8 @@ rule enterReturn {
 }
 
 // buggyLineNum
-// TODO: work on actual bug message
+// If subgoal is inputLineNum, student input the wrong line number
+// Then display bug messages
 rule buggyLineNum {
     when {
         p: Problem p.subGoal === "inputLineNum";
@@ -268,31 +282,14 @@ rule buggyLineNum {
 }
 
 
-// when student's current row in the bcCol hasn't reached bc row
-function notReachBC(s, t) {
-    var ss=s.selection;
-    //t.selection=ts;
-    console.log(parseInt(ss.substr(ss.length-3,1)));
-    return parseInt(ss.substr(ss.length-3,1)) < bcLine;
-}
-
-// when student's current row in the bcCol has gone beyond bc row
-function beyondBC(s, t) {
-    var ss=s.selection;
-    //t.selection=ts;
-    console.log(parseInt(ss.substr(ss.length-3,1)));
-    return parseInt(ss.substr(ss.length-3,1)) > bcLine;
-}
-
 // buggyBC scenarios
 // (1) callStackCol haven't reach bcLine+1, attempt to check baseCaseCol
 // (2) callStackCol go beyond bcLine+1, attempt to fill in more args
 //     TODO: currently #rows = len(inputArgs), need global var for table #row
 // (3) callStackCol at bcLine+1, check baseCaseCol at row != bcLine
-// TODO: update bug messages
-// trouble here, bug message appears at wrong time
+// TODO: bug message appears at wrong time
 rule buggyBC {
-    when { // curStep is actually the next row of bcLine
+    when {
         p: Problem p.subGoal === "inputCallStack";
         bc: Cell bc.colName == "baseCaseCol" && bc.rowNum == bcLine {name: sel};
         sai: StudentValues sai.input != null {selection: sSel, input: sInput};
@@ -303,26 +300,53 @@ rule buggyBC {
         var ans = "bc";
         var SAI = {selection: sSel, action: "UpdateTextArea", input: "don't_care"};
         if (checkSAI(SAI, notReachBC, true)) {
-            console.log("111111");
+            // console.log("111111");
             setSuccessOrBugMsg(" 'Call Stack' column hasn't reach the base case. Try to fill in more arguments!");
         } else if (checkSAI(SAI, beyondBC, true)) {
-            console.log("222222");
+            // console.log("222222");
             setSuccessOrBugMsg(" 'Call Stack' column has gone beyond the base case. Try to check 'BC' column!");
         } else if (checkSAI({selection: sSel, action: "UpdateTextArea", input: "bc"},  cmpLowerBC, true)){
-            
             setSuccessOrBugMsg("Good job! This is the correct base case.");
-            
-        } else {
-            backtrack(); // TODO: this level or next?
-
         }
+        backtrack(); // this level or where to backtrack?
     }
 }
 
 // buggyReturn scenarios
 // (1) start from row 0 of returnValCol instead of row bcLine
 // (2) start from row bcLine but wrong base case return value 
-// (3) wrong value at curStep row -> off by 1 hard to detect...
+// (3) wrong value at curStep row -> off by 1 (too hard to detect)
+// TODO: same problem as buggyBC, can't display bug messages at right time
+rule buggyReturn {
+    when {
+        p: Problem p.subGoal === "inputReturnVal" {curStep: step}; 
+        sai: StudentValues sai.input != null {selection: sSel, input: sInput};
+        c: Cell c.colName == "returnValCol" && c.rowNum == step[1] && !c.value 
+            {name: sel};
+        sc: Cell sc.colName == "returnValCol" && sc.name == sSel && 
+            (sc.name != sel || (sc.name == sel && sInput != returnVal[step[1]]))
+            {rowNum: scR}; 
+    }
+    then {
+        let row = step[1]; 
+        var SAI = {selection: sSel, action: "UpdateTextArea", input: sInput}; // or "don't_care"
+        if (checkSAI(SAI, function(s, t) {return row == bcLine && scR == 0;}, true)) {
+            // console.log("333333");
+            setSuccessOrBugMsg("What is the order of return for recursive callls?");
+            // TODO: hint after setSuccessOrBugMsg doesn't seem to work 
+            assert(new Hint("Start to return from the inner-most recursive call, not the outer-most call!"));
+            assert(new Hint("First return from the base case row, what should the return value be?"));
+            assert(new Hint("Fill '"+returnVal[row]+"' in the highlighted field."));
+
+        } else if (checkSAI(SAI, function(s, t) {return row == bcLine && scR == row;}, true)) {
+            // console.log("444444");
+            setSuccessOrBugMsg("Good job for correctly returning from the inner-most recursive call, which is the base case. What should the return value be at base case?");
+            assert(new Hint("Fill '"+returnVal[row]+"' in the highlighted field."));
+        }
+        backtrack(); // this level or where to backtrack?
+    }
+}
+
 
 rule Done {
 	when {
