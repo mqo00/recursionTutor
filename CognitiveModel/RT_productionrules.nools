@@ -6,6 +6,7 @@
 // inputReturnVal       enterReturn             buggyReturn
 
 // TODO: SRL reflection hint msg at BC step & return 1st step?
+// TODO: fix bug message at BC step
 
 import("RT_types.nools");
 
@@ -49,7 +50,12 @@ rule bootstrap {
         assert(new TPA("probCode", "UpdateTextArea", code1+"=="+code2+"=="+code3+"/\/"+code4+"/\/"+code5));
         assert(new TPA("step2Tag", "setVisible", false));
         assert(new TPA("returnValColTag", "setVisible", false));
-        assert(new TPA("funcNameCol.R0C0", "UpdateTextArea", funcName+"(                     )")); 
+
+        assert(new TPA("funcNameCol", "setVisible", false));
+        assert(new TPA("callStackTag", "setVisible", false));
+        assert(new TPA("callStackCol", "setVisible", false));
+        assert(new TPA("baseCaseColTag", "setVisible", false));
+        assert(new TPA("baseCaseCol", "setVisible", false));
 
 		setProblemAttribute("use_backtracking", true);
 		halt();
@@ -81,9 +87,20 @@ rule enterLineNum {
                 modify(p, "subGoal", "inputCallStack");
                 modify(p, "curStep", ["callStackCol", 1]);
                 // show step 2 title & instruction
+
                 assert(new TPA("step2Tag", "setVisible", true));
                 assert(new TPA("step2Dscp", "UpdateTextArea", instruction[0]));
+
+                assert(new TPA("funcNameCol", "setVisible", true));
+                assert(new TPA("funcNameCol.R0C0", "UpdateTextArea", funcName+"(                     )")); 
                 assert(new TPA("funcNameCol.R1C0", "UpdateTextArea", funcName+"(                     )"));
+
+
+                assert(new TPA("callStackTag", "setVisible", true));
+                assert(new TPA("callStackCol", "setVisible", true));
+
+                assert(new TPA("baseCaseColTag", "setVisible", true));
+                assert(new TPA("baseCaseCol", "setVisible", true));
             }
             halt();
         } else {
@@ -132,6 +149,10 @@ rule enterArgs {
         } else {
             backtrack();
         }
+        assert(new Hint("Read the recursive case in the codes left. How does the function make the problem smaller?"));
+        assert(new Hint("The function takes off the last digit of the integer for each recursive case."));
+        assert(new Hint("Fill '"+inputArgs[row]+"'' in the highlighted field."));
+
     }
 }
 
@@ -153,12 +174,18 @@ rule enterBC {
         col: Column col.name == "returnValCol";
     }
     then {
+        assert(new Hint("Read the code on the left. When is the base case reached?"));
+        assert(new Hint("In this problem, base case is reached when the function input only has one digit."));
+        assert(new Hint("Fill 'bc' in the highlighted field."));
+
         var ans = "bc"; // pass in comparator, or check StudentValues
         var SAI = {selection: sel, action: "UpdateTextArea", input: ans};
+        
+
         if (checkSAI(SAI,  cmpLowerBC)) {
             modify(bc, "value", ans);
 
-            assert(new Hint("Good job! Start work on the return value column now!"));
+            
             modify(p, "subGoal", "inputReturnVal");
             modify(p, "curStep", ["returnValCol", bcLine]);
 
@@ -168,6 +195,7 @@ rule enterBC {
             assert(new TPA("returnValCol", "setVisible", col.visible)); 
             assert(new TPA("returnValColTag", "setVisible", true));
             halt();
+            assert(new Hint("Good job! Start work on the return value column now!"));
         } else {
             backtrack();
         }
@@ -187,6 +215,7 @@ rule enterReturn {
             {name: sel};
     }
     then {
+
         let row = step[1];
         console.log(row);
         if (checkSAI({selection: sel, action: "UpdateTextArea", input: returnVal[row]})) {
@@ -199,6 +228,10 @@ rule enterReturn {
         } else {
             backtrack();
         }
+        assert(new Hint("Read the code on the left. What would the function return for this case?"));
+        assert(new Hint("Remember to add the return value from the previous case."));        
+        assert(new Hint("Fill '"+returnVal[row]+"' in the highlighted field."));
+
     }
 }
 
@@ -211,12 +244,44 @@ rule buggyLineNum {
     }
     then {
         var ans = lineInput[sel];
-        var SAI = {selection: sel, action: "UpdateTextField", input: ans};
-        if (checkSAI(SAI, function(s, t) {return s.selection == t.selection && s.input != ans;}, true)) {
-            setSuccessOrBugMsg("What portion of the code is base case & recursive case?");
+        var SAI = {selection: sel, action: "UpdateTextArea", input: ans};
+        if (checkSAI(SAI, function(s, t) {return s.selection == "bcStart" && s.selection == t.selection && s.input != ans;}, true)) {
+            setSuccessOrBugMsg("What portion of the code is base case?");
+            assert(new Hint("Base case is the simple case which can be resolved directly."));
+            assert(new Hint("The base case starts at line "+lineInput.bcStart+"."));
+        } else if (checkSAI(SAI, function(s, t) {return s.selection == "bcEnd" && s.selection == t.selection && s.input != ans;}, true)){
+            setSuccessOrBugMsg("What portion of the code is base case?");
+            assert(new Hint("Base case is the simple case which can be resolved directly."));
+            assert(new Hint("The base case ends at line "+lineInput.bcEnd+"."));
+        } else if (checkSAI(SAI, function(s, t) {return s.selection == "rcStart" && s.selection == t.selection && s.input != ans;}, true)){
+            setSuccessOrBugMsg("What portion of the code is recursive case?");
+            assert(new Hint("The recursive case requires solving 'simpler' version of the original problem."));
+            assert(new Hint("The recursive case starts at line "+lineInput.rcStart+"."));
+
+        } else if (checkSAI(SAI, function(s, t) {return s.selection == "rcEnd" && s.selection == t.selection && s.input != ans;}, true)){
+            setSuccessOrBugMsg("What portion of the code is recursive case?");
+            assert(new Hint("The recursive case requires solving 'simpler' version of the original problem."));
+            assert(new Hint("The recursive case ends at line "+lineInput.rcEnd+"."));
         }
         backtrack();
     }
+}
+
+
+// when student's current row in the bcCol hasn't reached bc row
+function notReachBC(s, t) {
+    var ss=s.selection;
+    //t.selection=ts;
+    console.log(parseInt(ss.substr(ss.length-3,1)));
+    return parseInt(ss.substr(ss.length-3,1)) < bcLine;
+}
+
+// when student's current row in the bcCol has gone beyond bc row
+function beyondBC(s, t) {
+    var ss=s.selection;
+    //t.selection=ts;
+    console.log(parseInt(ss.substr(ss.length-3,1)));
+    return parseInt(ss.substr(ss.length-3,1)) > bcLine;
 }
 
 // buggyBC scenarios
@@ -225,6 +290,7 @@ rule buggyLineNum {
 //     TODO: currently #rows = len(inputArgs), need global var for table #row
 // (3) callStackCol at bcLine+1, check baseCaseCol at row != bcLine
 // TODO: update bug messages
+// trouble here, bug message appears at wrong time
 rule buggyBC {
     when { // curStep is actually the next row of bcLine
         p: Problem p.subGoal === "inputCallStack";
@@ -234,16 +300,21 @@ rule buggyBC {
             sc.rowNum != bcLine && sc.name != sel ; 
     }
     then {
-        if (p.curStep[1] < bcLine+1) {
-            setSuccessOrBugMsg("callStackCol haven't reach bcLine, attempt to check baseCaseCol");
-        } else if (p.curStep[1] > bcLine+1) {
-            setSuccessOrBugMsg("callStackCol go beyond bcLine+1, attempt to fill in more args");
+        var ans = "bc";
+        var SAI = {selection: sSel, action: "UpdateTextArea", input: "don't_care"};
+        if (checkSAI(SAI, notReachBC, true)) {
+            console.log("111111");
+            setSuccessOrBugMsg(" 'Call Stack' column hasn't reach the base case. Try to fill in more arguments!");
+        } else if (checkSAI(SAI, beyondBC, true)) {
+            console.log("222222");
+            setSuccessOrBugMsg(" 'Call Stack' column has gone beyond the base case. Try to check 'BC' column!");
+        } else if (checkSAI({selection: sSel, action: "UpdateTextArea", input: "bc"},  cmpLowerBC, true)){
+            
+            setSuccessOrBugMsg("Good job! This is the correct base case.");
+            
         } else {
-            var ans = "bc";
-            if (checkSAI({selection: sSel, action: "UpdateTextArea", input: ans},  cmpLowerBC, true)) {
-                setSuccessOrBugMsg("callStackCol at bcLine+1, check baseCaseCol at row != bcLine");
-            }
             backtrack(); // TODO: this level or next?
+
         }
     }
 }
@@ -252,7 +323,6 @@ rule buggyBC {
 // (1) start from row 0 of returnValCol instead of row bcLine
 // (2) start from row bcLine but wrong base case return value 
 // (3) wrong value at curStep row -> off by 1 hard to detect...
-
 
 rule Done {
 	when {
