@@ -1,10 +1,10 @@
 import("RT_productionrules.nools");
 
 global probName = "binarySearch_code";
-global funcName = "binarySearch";
+global funcName = "   binarySearch";
 
 // index = row of column lines, start from 0
-global inputArgs = ["[-2,1,3,4,8,9],2", "[-2,1,3],2", "[3],2", "[],2"];
+global inputArgs = ["[-4,-2,0,1,3,7],2", "[3,7],2", "[3],2","[],2"];
 global returnVal = ["False", "False", "False", "False"];
 // input end & return start at bcLine, nRows = bcLine + 1
 global bcLine = 3;
@@ -17,7 +17,7 @@ global prompt = [
 ` True<br> &nbsp&nbsp &nbsp&nbsp binarySearch([1,4,5,7,8,10], 9) 
 `,
 ` False
-<br>Trace through this example: binarySearch([-2,1,3,4,8,9], 2).
+<br>Trace through this example: binarySearch([-4,-2,0,1,3,7], 2).
 `];
 
 global hints = {

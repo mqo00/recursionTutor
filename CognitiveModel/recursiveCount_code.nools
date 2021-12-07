@@ -1,21 +1,21 @@
 import("RT_productionrules.nools");
 
-global probName = "recursiveCount_1231231_code";
+global probName = "recursiveCount_code";
 global funcName = "recursiveCount";
 
 // index = row of column lines, start from 0
-global inputArgs = [1231231, 123123, 12312, 1231, 123, 12, 1];
-global returnVal = [3, 2, 2, 2, 1, 1, 1];
+global inputArgs = [1583212, 158321, 15832, 1583, 158, 15, 1];
+global returnVal = [2, 2, 1, 1, 1, 1, 1];
 // input end & return start at bcLine, nRows = bcLine + 1
-global bcLine = 6;
+global bcLine = 7;
 
-//"Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>recursiveCount(10100) = 2 <br>recursiveCount(23332) = 0 <br>Trace through this example: recursiveCount(1231231).";
+//"Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>recursiveCount(10100) = 2 <br>recursiveCount(23332) = 0 <br>Trace through this example: recursiveCount(1583212).";
 global prompt = [
 `Recursive Code Tracing of recursiveCount
 <br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, 
 <br>&nbsp&nbsp &nbsp&nbsp recursiveCount(10100) `,
 ` 2 <br>&nbsp&nbsp &nbsp&nbsp recursiveCount(23332) `,
-` 0 <br>Trace through this example: recursiveCount(1231231).`
+` 0 <br>Trace through this example: recursiveCount(1583212).`
 ];
 
 global hints = {

@@ -61,12 +61,12 @@ rule bootstrap {
         assert(new Problem(funcName+inputArgs[0], false));
 
         // different problems need different parse methods
-        if (probName == "recursiveCount_1231231_code"){
+        if (probName == "recursiveCount_code"){
             assert(new TPA("probDscp", "UpdateTextArea", prompt[0]+"=="+prompt[1]+"=="+prompt[2]));
             assert(new TPA("probCode", "UpdateTextArea", code[0]+"=="+code[1]+"=="+code[2]+"/\/"+code[3]+"/\/"+code[4]));
         }
 
-        if (probName == "recursiveCount_1231231_pseudo"){
+        if (probName == "recursiveCount_pseudo"){
             assert(new TPA("probDscp", "UpdateTextArea", prompt[0]+"=="+prompt[1]+"=="+prompt[2]));
             assert(new TPA("probCode", "UpdateTextArea", code[0]));
         }

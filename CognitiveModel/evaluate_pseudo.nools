@@ -1,7 +1,7 @@
 import("RT_productionrules.nools");
 
 global probName = "evaluate_pseudo";
-global funcName = "        evaluate";
+global funcName = "           evaluate";
 
 // index = row of column lines, start from 0
 global inputArgs = ["[1,1,0],[\"-\",\"+\"]", "[1,0],[\"+\"]", "[0],[]"];

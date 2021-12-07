@@ -1,6 +1,6 @@
 import("RT_productionrules.nools");
 
-global probName = "recursiveCount_1231231_pseudo";
+global probName = "recursiveCount_pseudo";
 global funcName = "recursiveCount";
 
 // index = row of column lines, start from 0

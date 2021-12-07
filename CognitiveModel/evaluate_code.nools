@@ -1,24 +1,24 @@
 import("RT_productionrules.nools");
 
 global probName = "evaluate_code";
-global funcName = "        evaluate";
+global funcName = "           evaluate";
 
 // index = row of column lines, start from 0
-global inputArgs = ["[1,1,0],[\"-\",\"+\"]", "[1,0],[\"+\"]", "[0],[]"];
-global returnVal = [0, 1, 0];
+global inputArgs = ["[2,3,1],[\"+\",\"-\"]", "[3,1],[\"-\"]", "[1],[]"];
+global returnVal = [4, 2, 1];
 // input end & return start at bcLine, nRows = bcLine + 1
 global bcLine = 2;
 
 //"Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>recursiveCount(10100) = 2 <br>recursiveCount(23332) = 0 <br>Trace through this example: recursiveCount(1231231).";
 global prompt = [
 `Function evaluate(nums, ops) takes in a list of numbers nums of size n and a list of operations ops (assume it only contains + or -) of size n - 1 and recursively evaluates the expression nums[0] ops[0] nums[1] ... ops[n-1] nums[n] and returns the evaluated number. For example, 
-<br> &nbsp&nbsp &nbsp&nbsp evaluate([5, 6, 4], [“+”, “-”]) 
+<br> &nbsp&nbsp &nbsp&nbsp evaluate([5, 6, 4], ["+","-""]) 
 `, // ==
 ` 7 (5+6-4)
 <br> &nbsp&nbsp &nbsp&nbsp evaluate([2], [])
 `, // ==
 ` 2
-<br>Trace through this example: evaluate([1,1,0], [“-”,“+”]).
+<br>Trace through this example: evaluate([2,3,1], ["+","-"]).
 `
 ];
 
