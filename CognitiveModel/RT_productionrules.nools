@@ -9,20 +9,6 @@ function cmpLowerBC(s, t) {
     return s.selection == t.selection && s.input.toLowerCase() == "bc";
 }
 
-// when student's current row in the bcCol hasn't reached bc row
-function notReachBC(s, t) {
-    var ss = s.selection;
-    console.log(parseInt(ss.substr(ss.length-3,1)));
-    return parseInt(ss.substr(ss.length-3,1)) < bcLine;
-}
-
-// when student's current row in the bcCol has gone beyond bc row
-function beyondBC(s, t) {
-    var ss = s.selection;
-    console.log(parseInt(ss.substr(ss.length-3,1)));
-    return parseInt(ss.substr(ss.length-3,1)) > bcLine;
-}
-
 rule bootstrap {
 	when {
 		s: Boolean s === false from false;
@@ -40,7 +26,7 @@ rule bootstrap {
                     assert(new Cell(lineName, cellVal, -1, cellCol));
                 }
             } else {
-                for (let row = 0; row < bcLine + 1; row++) {
+                for (let row = 0; row < 11; row++) { // init rows > bcLine + 1
                     // cellName e.g., callStackCol.R0C0, baseCaseCol.R2C2
                     cellVal=null;
                     cellName = cols[col] + ".R" + row + "C0"; 
@@ -187,7 +173,6 @@ rule enterArgs {
     then {
         let row = step[1];
         let nrow = row+1;
-        console.log("current row: "+row);
          // inputArgs[row] should be UpdateTextArea (not TextField)
         if (checkSAI({selection: sel, action: "UpdateTextArea", input: inputArgs[row] })) {
             modify(c, "value", inputArgs[row]);
@@ -314,34 +299,29 @@ rule buggyLineNum {
 // (2) callStackCol go beyond bcLine+1, attempt to fill in more args
 //     TODO: currently #rows = len(inputArgs), need global var for table #row
 // (3) callStackCol at bcLine+1, check baseCaseCol at row != bcLine
-//rule buggyBC {
-//    when {
-//        p: Problem p.subGoal === "inputCallStack" && p.curStep[1] == bcLine+1 ; // remember to make sure the student has finished the call stack
-//        bc: Cell bc.colName == "baseCaseCol" && bc.rowNum == bcLine {name: sel};
-//        sai: StudentValues sai.input != null {selection: sSel, input: sInput};
-//        sc: Cell sc.colName == "baseCaseCol" && sc.name == sSel &&
-//            sc.rowNum != bcLine && sc.name != sel ; 
-//    }
-//    then {
-//        var ans = "bc";
-//        var bool=parseInt(sSel.substr(sSel.length-3,1)) < bcLine;
-//        console.log(bool);
-//
-//        //var SAI = {selection: sSel, action: "UpdateTextArea", input: "don't_care"};"not_specified"
-//        var SAI = {selection: "don't_care", action: "UpdateTextArea", input: "don't_care"};
-//
-//        if (checkSAI(SAI, bool, true)) {
-//            //console.log("111111");
-//            setSuccessOrBugMsg(" 'Call Stack' column hasn't reached the base case. Try to fill in more arguments!");
-//        } else if (checkSAI(SAI, beyondBC, true)) {
-//            //console.log("222222");
-//            setSuccessOrBugMsg(" 'Call Stack' column has gone beyond the base case. Try to check 'BC' column!");
-//        }else if (checkSAI({selection: sel, action: "UpdateTextArea", input: "bc"},  cmpLowerBC, true)){
-//            setSuccessOrBugMsg("Good job! This is the correct base case.");
-//        }
-//        backtrack(); // this level or where to backtrack?
-//    }
-//}
+rule buggyBC {
+    salience: -1;
+    when {
+        p: Problem p.subGoal === "inputCallStack";
+        bc: Cell bc.colName == "baseCaseCol" && bc.rowNum == bcLine && !bc.value {name: sel};
+        sai: StudentValues sai.input != null && sai.selection != sel {selection: sSel, input: sInput};
+        sc: Cell sc.name == sSel {colName: scCol, rowNum: scRow}; 
+    }
+    then {
+        var row = p.curStep[1];
+        var SAI = {selection: sSel, action: "UpdateTextArea", input: sInput};
+        if (checkSAI(SAI, function(s, t) {return row <= bcLine && scCol == "baseCaseCol";}, true)) {
+            setSuccessOrBugMsg(" 'Call Stack' column hasn't reached the base case. Try to fill in more arguments!");
+        
+        } else if (checkSAI(SAI, function(s, t) {return scRow > bcLine && scCol == "callStackCol";}, true)) { //  
+            setSuccessOrBugMsg(" 'Call Stack' column has gone beyond the base case. Try to check 'BC' column!");
+        
+        } else if (checkSAI(SAI, function(s, t) {return row == bcLine+1 && scCol == "baseCaseCol" && scRow != bcLine;}, true)) {
+            setSuccessOrBugMsg("Write 'bc' at the same row as the base case call in the 'BC' column.");
+        }
+        backtrack();
+    }
+}
 
 // buggyReturn scenarios
 // (1) start from row 0 of returnValCol instead of row bcLine
