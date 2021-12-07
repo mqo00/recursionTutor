@@ -20,6 +20,12 @@ global prompt = [
 <br>Trace through this example: binarySearch([-2,1,3,4,8,9], 2).
 `];
 
+global hints = {
+  hint_enterArgs : "The function keeps a half of the current list for each recursive case.",
+  hint_enterBC : "In this problem, base case is reached when the current list is empty.",
+  hint_enterReturn : "Does the return value change after the previous case?",
+};
+
 global lineInput = {
     "bcStart": 2,
     "bcEnd": 3,

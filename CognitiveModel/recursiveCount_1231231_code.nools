@@ -18,6 +18,12 @@ global prompt = [
 ` 0 <br>Trace through this example: recursiveCount(1231231).`
 ];
 
+global hints = {
+  hint_enterArgs : "The function takes off the last digit of the integer for each recursive case.",
+  hint_enterBC : "In this problem, base case is reached when the function input only has one digit.",
+  hint_enterReturn : "Remember to add the return value from the previous case.",
+};
+
 global lineInput = {
     "bcStart": 2,
     "bcEnd": 5,

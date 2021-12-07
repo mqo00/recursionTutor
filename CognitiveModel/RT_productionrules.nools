@@ -81,7 +81,6 @@ rule bootstrap {
             assert(new TPA("probCode", "UpdateTextArea", code[0]));
         }
 
-
         assert(new TPA("step2Tag", "setVisible", false));
         assert(new TPA("returnValColTag", "setVisible", false));
 
@@ -124,6 +123,8 @@ rule enterLineNum {
         c4: Cell c4.colName == "lineNumbers" && c4.name != sel && c4.name != c3.name && c4.name != c2.name;
     }
     then {
+        assert(new Hint("Read the code on the left and indentify what portion is the base case or the recrusive case."));
+
         if (checkSAI({selection: sel, action: "UpdateTextField", input: lineInput[sel]})) {
             modify(c, "value", lineInput[sel]);
             // switch from inputLineNum to inputCallStack
@@ -192,7 +193,8 @@ rule enterArgs {
             backtrack();
         }
         assert(new Hint("Read the recursive case in the codes left. How does the function make the problem smaller?"));
-        assert(new Hint("The function takes off the last digit of the integer for each recursive case."));
+        //assert(new Hint("The function takes off the last digit of the integer for each recursive case.")); // problem-specific hint
+        assert(new Hint(hints.hint_enterArgs));
         assert(new Hint("Fill '"+inputArgs[row]+"'' in the highlighted field."));
 
     }
@@ -213,7 +215,8 @@ rule enterBC {
     }
     then {
         assert(new Hint("Read the code on the left. When is the base case reached?"));
-        assert(new Hint("In this problem, base case is reached when the function input only has one digit."));
+        //assert(new Hint("In this problem, base case is reached when the function input only has one digit.")); // problem-specific hint
+        assert(new Hint(hints.hint_enterBC));
         assert(new Hint("Fill 'bc' in the highlighted field."));
 
         var ans = "bc"; // pass in comparator, or check StudentValues
@@ -263,7 +266,8 @@ rule enterReturn {
             backtrack();
         }
         assert(new Hint("Read the code on the left. What would the function return for this case?"));
-        assert(new Hint("Remember to add the return value from the previous case."));        
+        //assert(new Hint("Remember to add the return value from the previous case.")); // problem-specific hint     
+        assert(new Hint(hints.hint_enterReturn));
         assert(new Hint("Fill '"+returnVal[row]+"' in the highlighted field."));
 
     }
