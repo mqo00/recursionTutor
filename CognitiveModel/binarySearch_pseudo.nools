@@ -1,50 +1,43 @@
 import("RT_productionrules.nools");
 
-global funcName = "recursiveCount";
+global probName = "binarySearch_pseudo";
+global funcName = "binarySearch";
+
 // index = row of column lines, start from 0
-global inputArgs = [1231231, 123123, 12312, 1231, 123, 12, 1];
-global returnVal = [3, 2, 2, 2, 1, 1, 1];
+global inputArgs = ["[-2,1,3,4,8,9],2", "[-2,1,3],2", "[3],2", "[],2"];
+global returnVal = ["False", "False", "False", "False"];
 // input end & return start at bcLine, nRows = bcLine + 1
-global bcLine = 6;
+global bcLine = 3;
 
 //"Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>recursiveCount(10100) = 2 <br>recursiveCount(23332) = 0 <br>Trace through this example: recursiveCount(1231231).";
-global prompt1 = "Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>&nbsp&nbsp &nbsp&nbsp recursiveCount(10100) ";
-global prompt2 = " 2 <br>&nbsp&nbsp &nbsp&nbsp recursiveCount(23332) ";
-global prompt3 = " 0 <br>Trace through this example: recursiveCount(1231231).";
+global prompt = [
+`Function binarySearch(L, n) returns whether the given target number n is in the given list L or not. The input L is a sorted list of numbers and output is a boolean value. For example, 
+<br> &nbsp&nbsp &nbsp&nbsp binarySearch([1,2,3,4,5,6,7], 6)
+`,
+` True<br> &nbsp&nbsp &nbsp&nbsp binarySearch([1,4,5,7,8,10], 9) 
+`,
+` False
+<br>Trace through this example: binarySearch([-2,1,3,4,8,9], 2).
+`];
 
 global lineInput = {
-    "bcStart": 2,
-    "bcEnd": 5,
-    "rcStart": 6,
-    "rcEnd": 10};
+    "bcStart": 1,
+    "bcEnd": 2,
+    "rcStart": 3,
+    "rcEnd": 8};
 
-global lineNumInput = [2, 5, 6, 10];
-global code1 = `
-1 def recursiveCount(n):
-<br>2 &nbsp&nbsp if n 
-`;
+global lineNumInput = [2, 3, 4, 12];
 
-global code2 = `
-  1:
-<br>3 &nbsp&nbsp &nbsp&nbsp return 1
-<br>4 &nbsp&nbsp elif n < 10:
-<br>5 &nbsp&nbsp &nbsp&nbsp return 0
-<br>6 &nbsp&nbsp else:
-<br>7 &nbsp&nbsp &nbsp&nbsp if n%10 
-`;
-
-global code3= ` 
-1:
-<br>8 &nbsp&nbsp &nbsp&nbsp &nbsp&nbsp return 1 + recursiveCount(n
-`;
-
-global code4 = `
- 10)
-<br>9 &nbsp&nbsp &nbsp&nbsp else:
-<br>10 &nbsp&nbsp &nbsp&nbsp &nbsp return recursiveCount(n 
-`;
-
-global code5=`10)`;
+global code = [
+`1 if the current list is empty, 
+<br>2 &nbsp&nbsp then return False
+<br>3 else check the element at the middle index in the current list
+<br>4 &nbsp&nbsp if the target number is the same as the middle element, 
+<br>5 &nbsp&nbsp &nbsp&nbsp then return True
+<br>6 &nbsp&nbsp if the target number is smaller than the middle element,
+<br>7 &nbsp&nbsp &nbsp&nbsp then return the recursive result on the first half of the current list(not including the middle element)
+<br>8 &nbsp&nbsp else return the recursive result on the second half of the current list(not including the middle element)
+`];
 
 global instruction = [
 "Fill out the Call Stack column with the input at each recursive call. Fill 'bc' in the BC? column at the row of the base case function call.",
@@ -57,51 +50,53 @@ global instruction = [
 // skillName: the name of the skill (optional: defaults to ruleName)
 // label: the display name for the skill (optional: defaults to skillName)
 // description: a description of the skill, seen in Tutorshop (optional: defaults to skillName)
+/*
 global skill_definitions = [
   {
     skillName: "understand concept of base case",
     category: "understand recursive algorithm (base case)",
     opportunities: 3,
-    description: "translate codes into recursion algorithm (base case)",
+    description: "translate codes into recursion algorithm (base case)"
   },
   {
     skillName: "understand concept of recursive case",
     category: "understand recursive algorithm (recursive case)",
     opportunities: 3,
-    description: "translate codes into recursion algorithm (recursive case)",
+    description: "translate codes into recursion algorithm (recursive case)"
   },
   {
     skillName: "identify input",
     category: "input call stack",
     opportunities: bcLine-1,
-    description: "identify input of the recursion problem",
+    description: "identify input of the recursion problem"
   },
   {
     skillName: "identify smaller instance",
     category: "input call stack",
     opportunities: bcLine-1,
-    description: "identify the smaller instance input of recursion",
+    description: "identify the smaller instance input of recursion"
   },
   {
     skillName: "identify base case in problem context",
     category: "understand recursive algorithm (base case)",
     opportunities: 1,
-    description: "identify the base case in a given problem as the last input",
+    description: "identify the base case in a given problem as the last input"
   },
   {
     skillName: "identify return order of recursive function calls",
     category: "understand recursive algorithm (recursive case)",
-    opportunities: 1,
+    opportunities: 1
   },
   {
     skillName: "identify return value of base case",
     category: "output return value",
-    opportunities: 1,
+    opportunities: 1
   },
   {
     skillName: "identify return value of recursive calls",
     category: "output return value",
     opportunities: bcLine-1,
-    description: "identify return value in the current recursive function call",
-  },
+    description: "identify return value in the current recursive function call"
+  }
 ];
+*/

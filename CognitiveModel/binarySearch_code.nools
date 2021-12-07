@@ -1,0 +1,124 @@
+import("RT_productionrules.nools");
+
+global probName = "binarySearch_code";
+global funcName = "binarySearch";
+
+// index = row of column lines, start from 0
+global inputArgs = ["[-2,1,3,4,8,9],2", "[-2,1,3],2", "[3],2", "[],2"];
+global returnVal = ["False", "False", "False", "False"];
+// input end & return start at bcLine, nRows = bcLine + 1
+global bcLine = 3;
+
+//"Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>recursiveCount(10100) = 2 <br>recursiveCount(23332) = 0 <br>Trace through this example: recursiveCount(1231231).";
+global prompt = [
+`Function binarySearch(L, n) returns whether the given target number n is in the given list L or not. The input L is a sorted list of numbers and output is a boolean value. For example, 
+<br> &nbsp&nbsp &nbsp&nbsp binarySearch([1,2,3,4,5,6,7], 6)
+`,
+` True<br> &nbsp&nbsp &nbsp&nbsp binarySearch([1,4,5,7,8,10], 9) 
+`,
+` False
+<br>Trace through this example: binarySearch([-2,1,3,4,8,9], 2).
+`];
+
+global lineInput = {
+    "bcStart": 2,
+    "bcEnd": 3,
+    "rcStart": 4,
+    "rcEnd": 12};
+
+global lineNumInput = [2, 3, 4, 12];
+
+global code = [
+`1 def binarySearch(L, n):
+<br>2 &nbsp&nbsp if len(L)
+`,// ==
+
+` 0:
+<br>3 &nbsp&nbsp &nbsp&nbsp return False
+<br>4 &nbsp&nbsp   else:
+<br>5 &nbsp&nbsp &nbsp&nbsp midIdx 
+`,// =
+
+` len(L) 
+`,// /
+
+` 2
+<br>6 &nbsp&nbsp &nbsp&nbsp midElem 
+`,// =
+
+` L[midIdx]
+<br>7 &nbsp&nbsp &nbsp&nbsp if n 
+`,//4 ==
+
+` midElem:
+<br>8 &nbsp&nbsp &nbsp&nbsp &nbsp&nbsp return True
+<br>9 &nbsp&nbsp &nbsp&nbsp elif n < midElem:
+<br>10&nbsp&nbsp &nbsp&nbsp &nbsp&nbsp return binarySearch(L[:midIdx], n)
+<br>11&nbsp&nbsp &nbsp&nbsp else:
+<br>12&nbsp&nbsp &nbsp&nbsp &nbsp&nbsp return binarySearch(L[midIdx + 1:], n)
+`
+
+
+];
+
+global instruction = [
+"Fill out the Call Stack column with the input at each recursive call. Fill 'bc' in the BC? column at the row of the base case function call.",
+"Fill out the Return Value column with the returned value of the corresponding function calls on the same row in the order they returned."
+];
+
+// ruleName: the name of the rule associated with this skill; optional from CTAT release 4.5 onwards
+// category: the category the skill belongs to
+// opportunities: the number of opportunities to exercise this skill that exist in this problem
+// skillName: the name of the skill (optional: defaults to ruleName)
+// label: the display name for the skill (optional: defaults to skillName)
+// description: a description of the skill, seen in Tutorshop (optional: defaults to skillName)
+/*
+global skill_definitions = [
+  {
+    skillName: "understand concept of base case",
+    category: "understand recursive algorithm (base case)",
+    opportunities: 3,
+    description: "translate codes into recursion algorithm (base case)"
+  },
+  {
+    skillName: "understand concept of recursive case",
+    category: "understand recursive algorithm (recursive case)",
+    opportunities: 3,
+    description: "translate codes into recursion algorithm (recursive case)"
+  },
+  {
+    skillName: "identify input",
+    category: "input call stack",
+    opportunities: bcLine-1,
+    description: "identify input of the recursion problem"
+  },
+  {
+    skillName: "identify smaller instance",
+    category: "input call stack",
+    opportunities: bcLine-1,
+    description: "identify the smaller instance input of recursion"
+  },
+  {
+    skillName: "identify base case in problem context",
+    category: "understand recursive algorithm (base case)",
+    opportunities: 1,
+    description: "identify the base case in a given problem as the last input"
+  },
+  {
+    skillName: "identify return order of recursive function calls",
+    category: "understand recursive algorithm (recursive case)",
+    opportunities: 1
+  },
+  {
+    skillName: "identify return value of base case",
+    category: "output return value",
+    opportunities: 1
+  },
+  {
+    skillName: "identify return value of recursive calls",
+    category: "output return value",
+    opportunities: bcLine-1,
+    description: "identify return value in the current recursive function call"
+  }
+];
+*/
