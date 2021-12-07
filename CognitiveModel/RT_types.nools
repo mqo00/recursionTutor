@@ -48,6 +48,7 @@ define Cell {
 // Other useful types
 //  Skill, StudentValues, TPA, Hint
 
+// https://github.com/CMUCTAT/CTAT/wiki/JavaScript-Model-Tracer#defining-skills
 define Skill {
   name: null,
   category: null,

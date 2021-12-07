@@ -11,7 +11,7 @@ global bcLine = 2;
 
 //"Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>recursiveCount(10100) = 2 <br>recursiveCount(23332) = 0 <br>Trace through this example: recursiveCount(1231231).";
 global prompt = [
-`Function evaluate(nums, ops)takes in a list of numbers nums of size n and a list of operations ops (assume it only contains + or -) of size n - 1 and recursively evaluates the expression nums[0] ops[0] nums[1] … ops[n-1] nums[n] and returns the evaluated number. For example, 
+`Function evaluate(nums, ops) takes in a list of numbers nums of size n and a list of operations ops (assume it only contains + or -) of size n - 1 and recursively evaluates the expression nums[0] ops[0] nums[1] ... ops[n-1] nums[n] and returns the evaluated number. For example, 
 <br> &nbsp&nbsp &nbsp&nbsp evaluate([5, 6, 4], [“+”, “-”]) 
 `, // ==
 ` 7 (5+6-4)

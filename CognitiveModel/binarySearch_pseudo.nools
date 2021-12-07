@@ -42,9 +42,9 @@ global code = [
 <br>5 &nbsp&nbsp &nbsp&nbsp then return True
 <br>6 &nbsp&nbsp if target number is smaller than middle element,
 <br>7 &nbsp&nbsp &nbsp&nbsp then return recursive result on the first half of
-<br> &nbsp &nbsp&nbsp &nbsp&nbsp current list(not including middle element)
+<br> &nbsp &nbsp&nbsp &nbsp&nbsp current list (not including middle element)
 <br>8 &nbsp&nbsp else return recursive result on the second half of
-<br> &nbsp &nbsp&nbsp &nbsp&nbsp current list(not including middle element)
+<br> &nbsp &nbsp&nbsp &nbsp&nbsp current list (not including middle element)
 `];
 
 global instruction = [
