@@ -111,10 +111,6 @@ rule bootstrap {
 // inputCallStack       enterArgs; enterBC      buggyBC
 // inputReturnVal       enterReturn             buggyReturn
 
-// TODO: SRL reflection hint msg at BC step & return 1st step?
-// TODO: fix bug message at BC step
-
-
 // enterLineNum
 // If subGoal == "inputLineNum", there're >=1 out of 4 linNumInput box empty
 //  And student enter correct lineNum for an empty input box
@@ -203,7 +199,6 @@ rule enterArgs {
             backtrack();
         }
         assert(new Hint("Read the recursive case in the codes left. How does the function make the problem smaller?"));
-        //assert(new Hint("The function takes off the last digit of the integer for each recursive case.")); // problem-specific hint
         assert(new Hint(hints.hint_enterArgs));
         assert(new Hint("Fill '"+inputArgs[row]+"'' in the highlighted field."));
 
@@ -225,7 +220,6 @@ rule enterBC {
     }
     then {
         assert(new Hint("Read the code on the left. When is the base case reached?"));
-        //assert(new Hint("In this problem, base case is reached when the function input only has one digit.")); // problem-specific hint
         assert(new Hint(hints.hint_enterBC));
         assert(new Hint("Fill 'bc' in the highlighted field."));
 
@@ -264,7 +258,6 @@ rule enterReturn {
     }
     then {
         let row = step[1];
-        // console.log(row);
         if (checkSAI({selection: sel, action: "UpdateTextArea", input: returnVal[row]})) {
             modify(c, "value", returnVal[row]);
             modify(p, "curStep", ["returnValCol", row-1]);
@@ -276,8 +269,7 @@ rule enterReturn {
             backtrack();
         }
         assert(new Hint("Read the code on the left. What would the function return for this case?"));
-        //assert(new Hint("Remember to add the return value from the previous case.")); // problem-specific hint     
-        assert(new Hint(hints.hint_enterReturn));
+        assert(new Hint(hints.hint_enterReturn)); // problem-specific hint
         assert(new Hint("Fill '"+returnVal[row]+"' in the highlighted field."));
 
     }
@@ -322,7 +314,6 @@ rule buggyLineNum {
 // (2) callStackCol go beyond bcLine+1, attempt to fill in more args
 //     TODO: currently #rows = len(inputArgs), need global var for table #row
 // (3) callStackCol at bcLine+1, check baseCaseCol at row != bcLine
-// TODO: bug message appears at wrong time
 //rule buggyBC {
 //    when {
 //        p: Problem p.subGoal === "inputCallStack" && p.curStep[1] == bcLine+1 ; // remember to make sure the student has finished the call stack
@@ -356,7 +347,6 @@ rule buggyLineNum {
 // (1) start from row 0 of returnValCol instead of row bcLine
 // (2) start from row bcLine but wrong base case return value 
 // (3) wrong value at curStep row -> off by 1 (too hard to detect)
-// TODO: same problem as buggyBC, can't display bug messages at right time
 rule buggyReturn {
     when {
         p: Problem p.subGoal === "inputReturnVal" {curStep: step}; 
@@ -369,21 +359,18 @@ rule buggyReturn {
     }
     then {
         let row = step[1]; 
-        var SAI = {selection: sSel, action: "UpdateTextArea", input: sInput}; // or "don't_care"
+        var SAI = {selection: sSel, action: "UpdateTextArea", input: sInput};
         if (checkSAI(SAI, function(s, t) {return row == bcLine && scR == 0;}, true)) {
-            // console.log("333333");
             setSuccessOrBugMsg("What is the order of return for recursive calls?");
-            // TODO: hint after setSuccessOrBugMsg doesn't seem to work 
             assert(new Hint("Start to return from the inner-most recursive call, not the outer-most call!"));
             assert(new Hint("First return from the base case row, what should the return value be?"));
-            assert(new Hint("Fill '"+returnVal[row]+"' in the base case row.")); // to do: highlighted field not corerect
+            assert(new Hint("Fill '"+returnVal[row]+"' in the base case row."));
 
         } else if (checkSAI(SAI, function(s, t) {return row == bcLine && scR == row;}, true)) {
-            // console.log("444444");
             setSuccessOrBugMsg("Good job for correctly returning from the inner-most recursive call, which is the base case. What should the return value be at base case?");
             assert(new Hint("Fill '"+returnVal[row]+"' in the highlighted field."));
         }
-        backtrack(); // this level or where to backtrack?
+        backtrack(); 
     }
 }
 

@@ -9,7 +9,6 @@ global returnVal = ["False", "False", "False", "False"];
 // input end & return start at bcLine, nRows = bcLine + 1
 global bcLine = 3;
 
-//"Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>recursiveCount(10100) = 2 <br>recursiveCount(23332) = 0 <br>Trace through this example: recursiveCount(1231231).";
 global prompt = [
 `Function binarySearch(L, n) returns whether the given target number n is in the given list L or not. The input L is a sorted list of numbers and output is a boolean value. For example, 
 <br> &nbsp&nbsp &nbsp&nbsp binarySearch([1,2,3,4,5,6,7], 6)
@@ -32,7 +31,6 @@ global lineInput = {
     "rcStart": 3,
     "rcEnd": 8};
 
-global lineNumInput = [2, 3, 4, 12];
 
 global code = [
 `1 if the current list is empty, 
@@ -75,13 +73,13 @@ global skill_definitions = [
   {
     skillName: "identify input",
     category: "input call stack",
-    opportunities: bcLine-1,
+    opportunities: 2,
     description: "identify input of the recursion problem"
   },
   {
     skillName: "identify smaller instance",
     category: "input call stack",
-    opportunities: bcLine-1,
+    opportunities: 2,
     description: "identify the smaller instance input of recursion"
   },
   {
@@ -103,7 +101,7 @@ global skill_definitions = [
   {
     skillName: "identify return value of recursive calls",
     category: "output return value",
-    opportunities: bcLine-1,
+    opportunities: 2,
     description: "identify return value in the current recursive function call"
   }
 ];

@@ -7,9 +7,8 @@ global funcName = "recursiveCount";
 global inputArgs = [1583212, 158321, 15832, 1583, 158, 15, 1];
 global returnVal = [2, 2, 1, 1, 1, 1, 1];
 // input end & return start at bcLine, nRows = bcLine + 1
-global bcLine = 7;
+global bcLine = 6;
 
-//"Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>recursiveCount(10100) = 2 <br>recursiveCount(23332) = 0 <br>Trace through this example: recursiveCount(1583212).";
 global prompt = [
 `Recursive Code Tracing of recursiveCount
 <br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, 
@@ -30,7 +29,6 @@ global lineInput = {
     "rcStart": 6,
     "rcEnd": 10};
 
-global lineNumInput = [2, 5, 6, 10];
 
 global code = [
 `
@@ -89,13 +87,13 @@ global skill_definitions = [
   {
     skillName: "identify input",
     category: "input call stack",
-    opportunities: bcLine-1,
+    opportunities: 5,
     description: "identify input of the recursion problem"
   },
   {
     skillName: "identify smaller instance",
     category: "input call stack",
-    opportunities: bcLine-1,
+    opportunities: 5,
     description: "identify the smaller instance input of recursion"
   },
   {
@@ -117,7 +115,7 @@ global skill_definitions = [
   {
     skillName: "identify return value of recursive calls",
     category: "output return value",
-    opportunities: bcLine-1,
+    opportunities: 5,
     description: "identify return value in the current recursive function call"
   }
 ];

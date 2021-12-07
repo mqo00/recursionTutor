@@ -9,7 +9,6 @@ global returnVal = [0, 1, 0];
 // input end & return start at bcLine, nRows = bcLine + 1
 global bcLine = 2;
 
-//"Recursive Code Tracing of recursiveCount<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, <br>recursiveCount(10100) = 2 <br>recursiveCount(23332) = 0 <br>Trace through this example: recursiveCount(1231231).";
 global prompt = [
 `Function evaluate(nums, ops) takes in a list of numbers nums of size n and a list of operations ops (assume it only contains + or -) of size n - 1 and recursively evaluates the expression nums[0] ops[0] nums[1] ... ops[n-1] nums[n] and returns the evaluated number. For example, 
 <br> &nbsp&nbsp &nbsp&nbsp evaluate([5, 6, 4], [“+”, “-”]) 
@@ -35,16 +34,15 @@ global lineInput = {
     "rcStart": 3,
     "rcEnd": 6};
 
-global lineNumInput = [2, 3, 4, 8];
 
 global code = [
 `1 if the list of numbers has only 1 element, 
 <br>2 &nbsp&nbsp then return the only number in the list
-<br>3 else check the first element in the list of operations,
+<br>3 else check the first element in list of operations,
 <br>4 &nbsp&nbsp if it’s “+”, 
-<br>5 &nbsp&nbsp &nbsp&nbsp then return first element of nums list + recursive 
+<br>5 &nbsp&nbsp &nbsp&nbsp then return first element of nums + recursive 
 <br> &nbsp &nbsp&nbsp &nbsp&nbsp result on the rest of nums and ops lists
-<br>6 &nbsp&nbsp else return first element of the nums list - recursive
+<br>6 &nbsp&nbsp else return first element of nums - recursive
 <br> &nbsp &nbsp&nbsp &nbsp&nbsp result on the rest of nums and ops lists
 `];
 
@@ -77,13 +75,13 @@ global skill_definitions = [
   {
     skillName: "identify input",
     category: "input call stack",
-    opportunities: bcLine-1,
+    opportunities: 1,
     description: "identify input of the recursion problem"
   },
   {
     skillName: "identify smaller instance",
     category: "input call stack",
-    opportunities: bcLine-1,
+    opportunities: 1,
     description: "identify the smaller instance input of recursion"
   },
   {
@@ -105,7 +103,7 @@ global skill_definitions = [
   {
     skillName: "identify return value of recursive calls",
     category: "output return value",
-    opportunities: bcLine-1,
+    opportunities: 1,
     description: "identify return value in the current recursive function call"
   }
 ];
