@@ -62,22 +62,32 @@ rule bootstrap {
 
         // different problems need different parse methods
         if (probName == "recursiveCount_1231231_code"){
-            assert(new TPA("probDscp", "UpdateTextArea", prompt[0]+"="+prompt[1]+"="+prompt[2]));
+            assert(new TPA("probDscp", "UpdateTextArea", prompt[0]+"=="+prompt[1]+"=="+prompt[2]));
             assert(new TPA("probCode", "UpdateTextArea", code[0]+"=="+code[1]+"=="+code[2]+"/\/"+code[3]+"/\/"+code[4]));
         }
 
         if (probName == "recursiveCount_1231231_pseudo"){
-            assert(new TPA("probDscp", "UpdateTextArea", prompt[0]+"="+prompt[1]+"="+prompt[2]));
+            assert(new TPA("probDscp", "UpdateTextArea", prompt[0]+"=="+prompt[1]+"=="+prompt[2]));
             assert(new TPA("probCode", "UpdateTextArea", code[0]));
         }
 
         if (probName == "binarySearch_code"){
-            assert(new TPA("probDscp", "UpdateTextArea", prompt[0]+"="+prompt[1]+"="+prompt[2]));
+            assert(new TPA("probDscp", "UpdateTextArea", prompt[0]+"=="+prompt[1]+"=="+prompt[2]));
             assert(new TPA("probCode", "UpdateTextArea", code[0]+"=="+code[1]+"="+code[2]+"/\/"+code[3]+"="+code[4]+"=="+code[5]));
         }
 
         if (probName == "binarySearch_pseudo"){
-            assert(new TPA("probDscp", "UpdateTextArea", prompt[0]+"="+prompt[1]+"="+prompt[2]));
+            assert(new TPA("probDscp", "UpdateTextArea", prompt[0]+"=="+prompt[1]+"=="+prompt[2]));
+            assert(new TPA("probCode", "UpdateTextArea", code[0]));
+        }
+
+        if (probName == "evaluate_code"){
+            assert(new TPA("probDscp", "UpdateTextArea", prompt[0]+"=="+prompt[1]+"=="+prompt[2]));
+            assert(new TPA("probCode", "UpdateTextArea", code[0]+"=="+code[1]+"=="+code[2]+"=="+code[3]));
+        }
+
+        if (probName == "evaluate_pseudo"){
+            assert(new TPA("probDscp", "UpdateTextArea", prompt[0]+"=="+prompt[1]+"=="+prompt[2]));
             assert(new TPA("probCode", "UpdateTextArea", code[0]));
         }
 
