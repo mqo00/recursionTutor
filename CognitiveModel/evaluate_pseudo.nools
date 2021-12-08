@@ -3,8 +3,8 @@ import("RT_productionrules.nools");
 global funcName = "           evaluate";
 
 // index = row of column lines, start from 0
-global inputArgs = ["[1,1,0],[\"-\",\"+\"]", "[1,0],[\"+\"]", "[0],[]"];
-global returnVal = [0, 1, 0];
+global inputArgs = ["[1,2,7],[\"+\",\"-\"]", "[2,7],[\"-\"]", "[7],[]"];
+global returnVal = [-4, -5, 7];
 // input end & return start at bcLine, nRows = bcLine + 1
 global bcLine = 2;
 
@@ -19,7 +19,7 @@ and returns the evaluated number. For example,
 <br> evaluate([5, 6, 4], [“+”, “-”]) &#61&#61 7 (5+6-4)
 <br> evaluate([2], []) &#61&#61 2
 </code>
-<br><br>With this pseudocode, trace through <mark><code>evaluate([1,1,0], [“-”,“+”])</code></mark>
+<br><br>With this pseudocode, trace through <mark><code>evaluate([1,2,7], [“+”,“-”])</code></mark>
 `;
 
 

@@ -2,12 +2,20 @@
 
 import("RT_types.nools");
 
-// Helper functions
+// remove the spaces and replace ' -> " in the input string to compare w/ refsol
+function parseInput(s, t) {
+    return s.selection == t.selection && s.input.replace(/\s+/g, '').replace(/'/g,'"') == t.input;
+}
 
 // comparator for input string BC or bc
 function cmpLowerBC(s, t) {
-    return s.selection == t.selection && s.input.toLowerCase() == "bc";
+    return s.selection == t.selection && s.input.replace(/\s+/g, '').toLowerCase() == "bc";
 }
+
+// subgoal              correct rules           hint/buggy rules
+// inputLineNum         enterLineNum            buggyLineNum, lineToCallHint 
+// inputCallStack       enterArgs; enterBC      buggyBC
+// inputReturnVal       enterReturn             buggyReturn
 
 rule bootstrap {
 	when {
@@ -51,7 +59,6 @@ rule bootstrap {
 
         assert(new TPA("step2Tag", "setVisible", false));
         assert(new TPA("returnValColTag", "setVisible", false));
-
         assert(new TPA("funcNameCol", "setVisible", false));
         assert(new TPA("callStackTag", "setVisible", false));
         assert(new TPA("callStackCol", "setVisible", false));
@@ -62,12 +69,6 @@ rule bootstrap {
 		halt();
 	}
 }
-
-// Production rules
-// subgoal              correct rules           hint/buggy rules
-// inputLineNum         enterLineNum            buggyLineNum, lineToCallHint 
-// inputCallStack       enterArgs; enterBC      buggyBC
-// inputReturnVal       enterReturn             buggyReturn
 
 // enterLineNum
 // If subGoal == "inputLineNum", there're >=1 out of 4 linNumInput box empty
@@ -145,12 +146,12 @@ rule enterArgs {
     then {
         let row = step[1];
         let nrow = row+1;
-         // inputArgs[row] should be UpdateTextArea (not TextField)
-        if (checkSAI({selection: sel, action: "UpdateTextArea", input: inputArgs[row] })) {
+        // inputArgs[row] should be UpdateTextArea (not TextField)
+        var SAI = {selection: sel, action: "UpdateTextArea", input: inputArgs[row]};
+        if (checkSAI(SAI, parseInput)) {
             modify(c, "value", inputArgs[row]);
             modify(p, "curStep", ["callStackCol", nrow]);
             assert(new TPA("funcNameCol.R"+nrow+"C0", "UpdateTextArea", funcName+"(                     )"));
-
             halt();
         } else {
             backtrack();
@@ -183,7 +184,7 @@ rule enterBC {
         var ans = "bc"; // pass in comparator, or check StudentValues
         var SAI = {selection: sel, action: "UpdateTextArea", input: ans};
 
-        if (checkSAI(SAI,  cmpLowerBC)) {
+        if (checkSAI(SAI, cmpLowerBC)) {
             modify(bc, "value", ans);
             modify(p, "subGoal", "inputReturnVal");
             modify(p, "curStep", ["returnValCol", bcLine]);
@@ -215,7 +216,8 @@ rule enterReturn {
     }
     then {
         let row = step[1];
-        if (checkSAI({selection: sel, action: "UpdateTextArea", input: returnVal[row]})) {
+        var SAI = {selection: sel, action: "UpdateTextArea", input: returnVal[row]};
+        if (checkSAI(SAI, parseInput)) {
             modify(c, "value", returnVal[row]);
             modify(p, "curStep", ["returnValCol", row-1]);
             if (row == 0) {
