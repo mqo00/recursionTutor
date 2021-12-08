@@ -1,6 +1,5 @@
 import("RT_productionrules.nools");
 
-global probName = "recursiveCount_pseudo";
 global funcName = "recursiveCount";
 
 // index = row of column lines, start from 0
@@ -9,13 +8,18 @@ global returnVal = [3, 2, 2, 2, 1, 1, 1];
 // input end & return start at bcLine, nRows = bcLine + 1
 global bcLine = 6;
 
-global prompt = [
-`Recursive Code Tracing of recursiveCount
-<br>Function recursiveCount(n) returns the number of 1's in a given positive integer n. Both the input and output type of recursiveCount(n) should be an integer. For example, 
-<br>&nbsp&nbsp &nbsp&nbsp recursiveCount(10100) `,
-` 2 <br>&nbsp&nbsp &nbsp&nbsp recursiveCount(23332) `,
-` 0 <br>Trace through this example: recursiveCount(1231231).`
-];
+global prompt =
+`<b>Recursive Pseudocode Tracing of <code>recursiveCount</code></b>
+<br>Function <code>recursiveCount(n)</code> returns the number of <code>1</code>'s in a given 
+positive integer <code>n</code>. Both the input and output type of <code>recursiveCount(n)</code> 
+should be an integer. For example,
+<code>
+<br>recursiveCount(10100) &#61&#61 2 
+<br>recursiveCount(23332) &#61&#61 0 
+</code>
+<br><br>With this pseudocode, trace through <mark><code>recursiveCount(1231231)</code></mark>
+`;
+
 
 global hints = {
   hint_enterArgs : "The function takes off the last digit of the integer for each recursive case.",
@@ -29,16 +33,16 @@ global lineInput = {
     "rcStart": 5,
     "rcEnd": 8};
 
-global code = [
+global code = 
 `1 if the current integer is 1,
 <br>2 &nbsp&nbsp then return 1
-<br>3 if the current integer is not 1 but still less than 10, 
+<br>3 if current integer is not 1 but still less than 10, 
 <br>4 &nbsp&nbsp then return 0
 <br>5 else check the last digit of the current integer
-<br>6 &nbsp&nbsp if it’s 1, 
-<br>7 &nbsp&nbsp &nbsp&nbsp then return 1 + the recursive result on the rest of the digits
-<br>8 &nbsp&nbsp else return the recursive result on the rest of the digits
-`];
+<br>6 &nbsp&nbsp if it’s 1, then return 1 + the recursive result
+<br>7 &nbsp&nbsp &nbsp&nbsp on the rest of the digits
+<br>8 &nbsp&nbsp else return recursive result on the rest of digits
+`;
 
 
 global instruction = [

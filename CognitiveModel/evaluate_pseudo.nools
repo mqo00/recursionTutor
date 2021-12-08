@@ -1,6 +1,5 @@
 import("RT_productionrules.nools");
 
-global probName = "evaluate_pseudo";
 global funcName = "           evaluate";
 
 // index = row of column lines, start from 0
@@ -9,17 +8,19 @@ global returnVal = [0, 1, 0];
 // input end & return start at bcLine, nRows = bcLine + 1
 global bcLine = 2;
 
-global prompt = [
-`Function evaluate(nums, ops) takes in a list of numbers nums of size n and a list of operations ops (assume it only contains + or -) of size n - 1 and recursively evaluates the expression nums[0] ops[0] nums[1] ... ops[n-1] nums[n] and returns the evaluated number. For example, 
-<br> &nbsp&nbsp &nbsp&nbsp evaluate([5, 6, 4], [“+”, “-”]) 
-`, // ==
-` 7 (5+6-4)
-<br> &nbsp&nbsp &nbsp&nbsp evaluate([2], [])
-`, // ==
-` 2
-<br>Trace through this example: evaluate([1,1,0], [“-”,“+”]).
-`
-];
+// https://unicode-table.com/en/html-entities/
+// = &#61; / &#8260; space &nbsp; \n <br>; code </code>; highlight </mark>
+global prompt = 
+`Function <code>evaluate(nums, ops)</code> takes in a list of numbers <code>nums</code> of size <code>n</code> 
+and a list of operations <code>ops</code> (assume it only contains <code>+</code> or <code>-</code>) of size <code>n - 1</code> and 
+recursively evaluates the expression <code>nums[0] ops[0] nums[1] ... ops[n-1] nums[n]</code> 
+and returns the evaluated number. For example, 
+<code>
+<br> evaluate([5, 6, 4], [“+”, “-”]) &#61&#61 7 (5+6-4)
+<br> evaluate([2], []) &#61&#61 2
+</code>
+<br><br>With this pseudocode, trace through <mark><code>evaluate([1,1,0], [“-”,“+”])</code></mark>
+`;
 
 
 global hints = {
@@ -35,7 +36,7 @@ global lineInput = {
     "rcEnd": 6};
 
 
-global code = [
+global code =
 `1 if the list of numbers has only 1 element, 
 <br>2 &nbsp&nbsp then return the only number in the list
 <br>3 else check the first element in list of operations,
@@ -44,7 +45,7 @@ global code = [
 <br> &nbsp &nbsp&nbsp &nbsp&nbsp result on the rest of nums and ops lists
 <br>6 &nbsp&nbsp else return first element of nums - recursive
 <br> &nbsp &nbsp&nbsp &nbsp&nbsp result on the rest of nums and ops lists
-`];
+`;
 
 
 global instruction = [
