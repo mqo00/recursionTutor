@@ -23,7 +23,7 @@ should be an integer. For example,
 global hints = {
   hint_enterArgs : "The function takes off the last digit of the integer for each recursive case.",
   hint_enterBC : "In this problem, base case is reached when the function input only has one digit.",
-  hint_enterReturn : "Remember to add the return value from the previous case.",
+  hint_enterReturn : "This function counts the number of the digit '1' in the input. Remember to add the return value from the previous case.",
 };
 
 global lineInput = {

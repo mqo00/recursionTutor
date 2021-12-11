@@ -151,7 +151,7 @@ rule enterArgs {
         if (checkSAI(SAI, parseInput)) {
             modify(c, "value", inputArgs[row]);
             modify(p, "curStep", ["callStackCol", nrow]);
-            assert(new TPA("funcNameCol.R"+nrow+"C0", "UpdateTextArea", funcName+"(                     )"));
+            assert(new TPA("funcNameCol.R"+nrow+"C0", "UpdateTextArea", funcName+"(                            )"));
             halt();
         } else {
             backtrack();
