@@ -4,6 +4,7 @@ Final Project of *05432/05832 Personalized Online Learning @ CMU (Fall 2021)*
 * Xinzhu Wang (@dandylion99)
 
 Directory
+```
 .
 ├── CognitiveModel
 │   ├── RT_productionrules.nools        (production rules of cognitive tutor)
@@ -23,3 +24,4 @@ Directory
 ├── README.md
 ├── miro_CTA_KC_Model.pdf               (theoretical CTA & KC cognitive model)
 ├── miro_WM_Model.jpeg                  (working memory model of cognitive tutor)
+```
